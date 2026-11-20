@@ -147,6 +147,8 @@ details ul{color:var(--muted);margin:8px 0 0}
   .grid2{grid-template-columns:minmax(0,1fr)}
   .fld{grid-template-columns:minmax(0,1fr)}
   .top h1{font-size:23px}
+  .rpt{overflow-x:auto}
+  .tbar select{max-width:100%}
 }
 @media print{
   .rail,.tbar,.banner,.filters{display:none!important}
@@ -715,7 +717,7 @@ function auItemStatus(r){
 }
 
 /* ---------- csv ---------- */
-function csvCell(v){v=String(v==null?'':v);return /[",\n\t\r]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v}
+function csvCell(v){v=String(v==null?'':v);if(/^[=+\-@\t\r]/.test(v))v="'"+v;return /[",\n\t\r]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v}
 function toCSV(rows,C){
   return [C.map(function(c){return csvCell(c.label)}).join(',')].concat(rows.map(function(r){
     return C.map(function(c){return csvCell(c.calc?c.calc(r):r[c.k])}).join(',');
@@ -855,7 +857,7 @@ function tableEditor(t,opt){
       tbl.slice(1).forEach(function(line){
         var r={};
         map.forEach(function(c,i){
-          if(!c)return;var v=(line[i]==null?'':String(line[i])).trim();
+          if(!c)return;var v=(line[i]==null?'':String(line[i])).trim().replace(/^'(?=[=+\-@])/,'');
           if(c.type==='date'){var nd=normDate(v);if(nd.bad)bad++;v=nd.v}
           if(c.fw){var g=c.opts.filter(function(o){return o.v.toLowerCase()===v.toLowerCase()||o.l.toLowerCase()===v.toLowerCase()})[0];v=g?g.v:v}
           if(c.k==='approved'){var lw=v.toLowerCase();v=lw==='yes'?'Approved':lw==='no'?'Not requested':lw==='not known'?'':v}
