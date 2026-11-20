@@ -154,6 +154,41 @@ details ul{color:var(--muted);margin:8px 0 0}
   .tw{max-height:none;overflow:visible}
   body{background:#fff}
 }
+
+.rptbar{display:flex;gap:8px;flex-wrap:wrap}
+.rpt{background:#fff;color:#14202B;border:1px solid #DCE1E7;border-radius:8px;padding:30px 34px;max-width:980px;font:13px/1.5 var(--fb)}
+.rpt .rh{display:flex;justify-content:space-between;gap:20px;border-bottom:3px solid var(--accent);padding-bottom:12px;margin-bottom:16px}
+.rpt .rho{text-transform:uppercase;letter-spacing:.06em;font-size:11px;color:#586674}
+.rpt h2{font-family:var(--fd);font-size:24px;line-height:1.2;margin:2px 0;color:#14202B}
+.rpt .rhs{color:#586674}
+.rpt .rhm{font-size:12px;color:#586674;text-align:right}
+.rpt .rhm b{color:#14202B;font-weight:600}
+.rpt .rc{border-left:4px solid var(--accent);background:#F3F6F9;padding:12px 14px;margin:0 0 14px;font-size:14px}
+.rpt .rk{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:0 0 14px}
+.rpt .rk .t{border:1px solid #DCE1E7;padding:8px 10px;border-radius:6px}
+.rpt .rk .n{font-family:var(--fd);font-size:26px;line-height:1.2}
+.rpt .rk .l{font-size:11px;color:#586674}
+.rpt h3.rs{font-size:14px;margin:18px 0 6px;border-bottom:1px solid #DCE1E7;padding-bottom:3px;color:#14202B}
+.rpt h4{font-size:11px;margin:10px 0 4px;color:#586674;text-transform:uppercase;letter-spacing:.05em}
+.rpt table.rt{width:100%;border-collapse:collapse;font-size:12px;margin:4px 0 8px}
+.rpt .rt th{background:#EDF0F4;text-align:left;padding:5px 7px;border-bottom:1px solid #C9D0D8;font-weight:600;color:#14202B}
+.rpt .rt td{padding:5px 7px;border-bottom:1px solid #E6EAEE;vertical-align:top}
+.rpt .rt td.none,.rpt p.none{color:#586674;font-style:italic}
+.rpt .mono{font-family:var(--fm);font-size:10px;overflow-wrap:anywhere}
+.rpt .rg{display:inline-block;padding:0 8px;border-radius:3px;font-weight:600;font-size:11px;color:#fff;line-height:1.7;white-space:nowrap}
+.rpt .rg.good{background:#1D7A4E}.rpt .rg.warn{background:#A8620A}.rpt .rg.crit{background:#B3261E}.rpt .rg.mute{background:#7A8794}
+.rpt .rb{font-size:11px;color:#586674;margin-top:14px;border-top:1px solid #DCE1E7;padding-top:8px}
+.rpt .rf{font-size:10px;color:#586674;margin-top:10px;border-top:1px solid #DCE1E7;padding-top:6px;display:grid;gap:2px}
+.rpt .pc{border:1px solid #DCE1E7;border-radius:6px;padding:8px 10px;margin:8px 0}
+.rpt .pcs{font-size:11px;color:#586674;margin:2px 0 4px}
+@media print{
+  body.rptmode .top,body.rptmode .foot,body.rptmode #notices,.noprint{display:none!important}
+  body.rptmode .main{padding:0;max-width:none}
+  body.rptmode .rpt{border:0;padding:0;max-width:none}
+  .rpt tr,.rpt .pc{break-inside:avoid}.rpt thead{display:table-header-group}
+  .rpt h3.rs,.rpt h4{break-after:avoid}
+  @page{margin:14mm}
+}
 </style>
 </head>
 <body>
@@ -210,7 +245,7 @@ var DOMAINS=["Governance and leadership", "Policy and compliance", "Risk and imp
 var REF_ISO=[{"id": "A.2.2", "t": "AI policy"}, {"id": "A.2.3", "t": "Alignment with other organizational policies"}, {"id": "A.2.4", "t": "Review of the AI policy"}, {"id": "A.3.2", "t": "AI roles and responsibilities"}, {"id": "A.3.3", "t": "Reporting of concerns"}, {"id": "A.4.2", "t": "Resource documentation"}, {"id": "A.4.3", "t": "Data resources"}, {"id": "A.4.4", "t": "Tooling resources"}, {"id": "A.4.5", "t": "System and computing resources"}, {"id": "A.4.6", "t": "Human resources"}, {"id": "A.5.2", "t": "AI system impact assessment process"}, {"id": "A.5.3", "t": "Documentation of AI system impact assessments"}, {"id": "A.5.4", "t": "Assessing AI system impact on individuals or groups of individuals"}, {"id": "A.5.5", "t": "Assessing societal impacts of AI systems"}, {"id": "A.6.1.2", "t": "Objectives for responsible development of AI system"}, {"id": "A.6.1.3", "t": "Processes for responsible design and development"}, {"id": "A.6.2.2", "t": "AI system requirements and specification"}, {"id": "A.6.2.3", "t": "Documentation of AI system design and development"}, {"id": "A.6.2.4", "t": "AI system verification and validation"}, {"id": "A.6.2.5", "t": "AI system deployment"}, {"id": "A.6.2.6", "t": "AI system operation and monitoring"}, {"id": "A.6.2.7", "t": "AI system technical documentation"}, {"id": "A.6.2.8", "t": "AI system recording of event logs"}, {"id": "A.7.2", "t": "Data for development and enhancement of AI system"}, {"id": "A.7.3", "t": "Acquisition of data"}, {"id": "A.7.4", "t": "Quality of data for AI systems"}, {"id": "A.7.5", "t": "Data provenance"}, {"id": "A.7.6", "t": "Data preparation"}, {"id": "A.8.2", "t": "System documentation and information for users"}, {"id": "A.8.3", "t": "External reporting"}, {"id": "A.8.4", "t": "Communication of incidents"}, {"id": "A.8.5", "t": "Information for interested parties"}, {"id": "A.9.2", "t": "Processes for responsible use of AI systems"}, {"id": "A.9.3", "t": "Objectives for responsible use of AI system"}, {"id": "A.9.4", "t": "Intended use of the AI system"}, {"id": "A.10.2", "t": "Allocating responsibilities"}, {"id": "A.10.3", "t": "Suppliers"}, {"id": "A.10.4", "t": "Customers"}];
 var REF_CL=[{"id": "4.1", "t": "Understanding the organization and its context"}, {"id": "4.2", "t": "Understanding the needs and expectations of interested parties"}, {"id": "4.3", "t": "Determining the scope of the AI management system"}, {"id": "4.4", "t": "AI management system"}, {"id": "5.1", "t": "Leadership and commitment"}, {"id": "5.2", "t": "AI policy"}, {"id": "5.3", "t": "Roles, responsibilities and authorities"}, {"id": "6.1.1", "t": "Risks and opportunities: general"}, {"id": "6.1.2", "t": "AI risk assessment"}, {"id": "6.1.3", "t": "AI risk treatment"}, {"id": "6.1.4", "t": "AI system impact assessment"}, {"id": "6.2", "t": "AI objectives and planning to achieve them"}, {"id": "6.3", "t": "Planning of changes"}, {"id": "7.1", "t": "Resources"}, {"id": "7.2", "t": "Competence"}, {"id": "7.3", "t": "Awareness"}, {"id": "7.4", "t": "Communication"}, {"id": "7.5.1", "t": "Documented information: general"}, {"id": "7.5.2", "t": "Creating and updating documented information"}, {"id": "7.5.3", "t": "Control of documented information"}, {"id": "8.1", "t": "Operational planning and control"}, {"id": "8.2", "t": "AI risk assessment (operation)"}, {"id": "8.3", "t": "AI risk treatment (operation)"}, {"id": "8.4", "t": "AI system impact assessment (operation)"}, {"id": "9.1", "t": "Monitoring, measurement, analysis and evaluation"}, {"id": "9.2.1", "t": "Internal audit: general"}, {"id": "9.2.2", "t": "Internal audit programme"}, {"id": "9.3.1", "t": "Management review: general"}, {"id": "9.3.2", "t": "Management review inputs"}, {"id": "9.3.3", "t": "Management review results"}, {"id": "10.1", "t": "Continual improvement"}, {"id": "10.2", "t": "Nonconformity and corrective action"}];
 var REF_NIST=[{"id": "GOVERN 1.1", "t": "Legal and regulatory requirements understood and documented"}, {"id": "GOVERN 1.2", "t": "Trustworthy-AI characteristics built into policies"}, {"id": "GOVERN 1.3", "t": "Risk management effort scaled to risk tolerance"}, {"id": "GOVERN 1.4", "t": "Transparent risk-management policies and controls"}, {"id": "GOVERN 1.5", "t": "Ongoing monitoring and periodic review planned"}, {"id": "GOVERN 1.6", "t": "Inventory of AI systems"}, {"id": "GOVERN 1.7", "t": "Safe decommissioning and phase-out"}, {"id": "GOVERN 2.1", "t": "Risk roles, responsibilities and reporting lines"}, {"id": "GOVERN 2.2", "t": "Training on AI risk duties"}, {"id": "GOVERN 2.3", "t": "Executive responsibility for AI risk decisions"}, {"id": "GOVERN 3.1", "t": "Diverse team informs life-cycle decisions"}, {"id": "GOVERN 3.2", "t": "Roles for human-AI configurations and oversight"}, {"id": "GOVERN 4.1", "t": "Critical thinking and safety-first mindset"}, {"id": "GOVERN 4.2", "t": "Risks and impacts documented and communicated"}, {"id": "GOVERN 4.3", "t": "Testing, incident identification and information sharing"}, {"id": "GOVERN 5.1", "t": "External feedback on impacts collected and acted on"}, {"id": "GOVERN 5.2", "t": "Stakeholder feedback incorporated into design"}, {"id": "GOVERN 6.1", "t": "Third-party risks, including IP, addressed"}, {"id": "GOVERN 6.2", "t": "Contingency for third-party failures"}, {"id": "MAP 1.1", "t": "Intended purpose, context and impacts documented"}, {"id": "MAP 1.2", "t": "Diverse, interdisciplinary contributors involved"}, {"id": "MAP 1.3", "t": "Mission and AI goals understood"}, {"id": "MAP 1.4", "t": "Business value and use context defined"}, {"id": "MAP 1.5", "t": "Organisational risk tolerances set"}, {"id": "MAP 1.6", "t": "System requirements from AI actors and socio-technical factors"}, {"id": "MAP 2.1", "t": "Tasks and methods defined"}, {"id": "MAP 2.2", "t": "Knowledge limits and human use of outputs documented"}, {"id": "MAP 2.3", "t": "Scientific integrity and TEVV considerations identified"}, {"id": "MAP 3.1", "t": "Potential benefits examined"}, {"id": "MAP 3.2", "t": "Potential costs examined"}, {"id": "MAP 3.3", "t": "Targeted application scope specified"}, {"id": "MAP 3.4", "t": "Operator proficiency defined"}, {"id": "MAP 3.5", "t": "Human oversight processes defined"}, {"id": "MAP 4.1", "t": "Legal and technology risks of components mapped"}, {"id": "MAP 4.2", "t": "Internal risk controls for components identified"}, {"id": "MAP 5.1", "t": "Likelihood and magnitude of impacts assessed"}, {"id": "MAP 5.2", "t": "Ongoing engagement and impact feedback practices"}, {"id": "MEASURE 1.1", "t": "Metrics selected for significant risks"}, {"id": "MEASURE 1.2", "t": "Metrics and controls reassessed regularly"}, {"id": "MEASURE 1.3", "t": "Independent assessors and affected parties involved"}, {"id": "MEASURE 2.1", "t": "Test sets, metrics and TEVV tools documented"}, {"id": "MEASURE 2.2", "t": "Human-subject evaluations meet requirements"}, {"id": "MEASURE 2.3", "t": "Performance measured under deployment-like conditions"}, {"id": "MEASURE 2.4", "t": "Functionality and behaviour monitored in production"}, {"id": "MEASURE 2.5", "t": "Validity and reliability demonstrated"}, {"id": "MEASURE 2.6", "t": "Safety evaluated regularly"}, {"id": "MEASURE 2.7", "t": "Security and resilience evaluated"}, {"id": "MEASURE 2.8", "t": "Transparency and accountability risks examined"}, {"id": "MEASURE 2.9", "t": "Model explained and outputs interpreted"}, {"id": "MEASURE 2.10", "t": "Privacy risks examined"}, {"id": "MEASURE 2.11", "t": "Fairness and bias evaluated"}, {"id": "MEASURE 2.12", "t": "Environmental impact assessed"}, {"id": "MEASURE 2.13", "t": "TEVV metrics and processes evaluated for effectiveness"}, {"id": "MEASURE 3.1", "t": "Existing and emergent risks tracked"}, {"id": "MEASURE 3.2", "t": "Risk tracking where measurement is hard"}, {"id": "MEASURE 3.3", "t": "Feedback and appeal channels established"}, {"id": "MEASURE 4.1", "t": "Measurement connected to deployment context"}, {"id": "MEASURE 4.2", "t": "Results validated with domain experts"}, {"id": "MEASURE 4.3", "t": "Performance changes identified and documented"}, {"id": "MANAGE 1.1", "t": "Decision on whether to proceed"}, {"id": "MANAGE 1.2", "t": "Risk treatment prioritised"}, {"id": "MANAGE 1.3", "t": "Responses to high-priority risks documented"}, {"id": "MANAGE 1.4", "t": "Residual risks documented for acquirers and users"}, {"id": "MANAGE 2.1", "t": "Resources and non-AI alternatives weighed"}, {"id": "MANAGE 2.2", "t": "Value of deployed systems sustained"}, {"id": "MANAGE 2.3", "t": "Response and recovery for new risks"}, {"id": "MANAGE 2.4", "t": "Responsibility for disengaging systems assigned"}, {"id": "MANAGE 3.1", "t": "Third-party AI risks monitored"}, {"id": "MANAGE 3.2", "t": "Pre-trained models monitored"}, {"id": "MANAGE 4.1", "t": "Post-deployment monitoring and incident response"}, {"id": "MANAGE 4.2", "t": "Continual improvement built into updates"}, {"id": "MANAGE 4.3", "t": "Incidents and errors communicated and recovery tracked"}];
-var LIB=[{"code": "G1", "domain": "Governance and leadership", "title": "Mandate, scope and context", "statement": "The organisation has agreed why it governs AI, what is in scope, who is affected and which internal and external factors matter.", "evidence": "Approved mandate and scope statement; stakeholder list", "iso": ["4.1", "4.2", "4.3", "4.4", "5.1"], "nist": ["MAP 1.3"], "gIso": "Cl.4-10", "gNist": "MAP"}, {"code": "G2", "domain": "Governance and leadership", "title": "AI objectives and change planning", "statement": "Measurable AI governance objectives are set, resourced and planned, and changes to the programme are planned before they are made.", "evidence": "Objectives with owners and dates; change plan", "iso": ["6.2", "6.3"], "nist": ["MAP 1.4"], "gIso": "Cl.4-10", "gNist": "MAP"}, {"code": "G3", "domain": "Governance and leadership", "title": "Roles and responsibilities", "statement": "Roles for AI risk, use, oversight and reporting are named, written down and communicated, including shared duties with partners.", "evidence": "Role descriptions or RACI; communication record", "iso": ["5.3", "A.3.2", "A.10.2"], "nist": ["GOVERN 2.1"], "gIso": "A.3", "gNist": "GOVERN"}, {"code": "G4", "domain": "Governance and leadership", "title": "Executive accountability", "statement": "Senior leaders own AI risk decisions and show commitment through direction, resources and regular attention.", "evidence": "Committee terms; minutes showing AI risk decisions", "iso": ["5.1"], "nist": ["GOVERN 2.3"], "gIso": "Cl.4-10", "gNist": "GOVERN"}, {"code": "G5", "domain": "Governance and leadership", "title": "Diverse and independent input", "statement": "People with different skills and backgrounds, and assessors independent of the build team, inform decisions across the life cycle.", "evidence": "Review panel membership; independent review reports", "iso": [], "nist": ["GOVERN 3.1", "MAP 1.2", "MEASURE 1.3"], "gIso": "", "gNist": "GOVERN"}, {"code": "P1", "domain": "Policy and compliance", "title": "AI policy", "statement": "A policy approved by top management states the organisation's commitments, builds trustworthy-AI characteristics into practice and sets transparent risk rules.", "evidence": "Approved policy; publication and acknowledgement record", "iso": ["5.2", "A.2.2"], "nist": ["GOVERN 1.2", "GOVERN 1.4"], "gIso": "A.2", "gNist": "GOVERN"}, {"code": "P2", "domain": "Policy and compliance", "title": "Policy alignment and review", "statement": "The AI policy is checked against other policies and reviewed at planned intervals or after major change.", "evidence": "Policy review log; list of related policies", "iso": ["A.2.3", "A.2.4"], "nist": [], "gIso": "A.2", "gNist": ""}, {"code": "P3", "domain": "Policy and compliance", "title": "Legal and regulatory duties", "statement": "Legal, regulatory and contract duties that apply to AI are identified, recorded, assigned and tracked.", "evidence": "Obligation register with owners", "iso": ["4.2", "6.1.1"], "nist": ["GOVERN 1.1"], "gIso": "Cl.4-10", "gNist": "GOVERN"}, {"code": "R1", "domain": "Risk and impact", "title": "AI risk assessment", "statement": "A defined method identifies, analyses and evaluates AI risks against set criteria and is applied at planned intervals.", "evidence": "Method document; completed assessments", "iso": ["6.1.1", "6.1.2", "8.2"], "nist": [], "gIso": "Cl.4-10", "gNist": ""}, {"code": "R2", "domain": "Risk and impact", "title": "Risk tolerance and proportionate effort", "statement": "Risk tolerance is set, and the effort spent on each AI system is scaled to it.", "evidence": "Risk appetite statement; tiering rule", "iso": ["6.1.2"], "nist": ["GOVERN 1.3", "MAP 1.5"], "gIso": "Cl.4-10", "gNist": "GOVERN"}, {"code": "R3", "domain": "Risk and impact", "title": "Risk treatment and residual risk", "statement": "Risks are ranked by impact, likelihood and resources, then treated or accepted by a named owner. Residual risk is recorded and non-AI options are weighed.", "evidence": "Risk treatment plan; residual risk acceptance", "iso": ["6.1.3", "8.3"], "nist": ["MANAGE 1.2", "MANAGE 1.3", "MANAGE 1.4", "MANAGE 2.1"], "gIso": "Cl.4-10", "gNist": "MANAGE"}, {"code": "R4", "domain": "Risk and impact", "title": "Impact assessment process", "statement": "A process sets when an AI system impact assessment is needed, what it covers and how results, benefits and costs are recorded.", "evidence": "Impact assessment procedure; completed assessments", "iso": ["6.1.4", "8.4", "A.5.2", "A.5.3"], "nist": ["MAP 3.1", "MAP 3.2", "MAP 5.1"], "gIso": "A.5", "gNist": "MAP"}, {"code": "R5", "domain": "Risk and impact", "title": "Impact on people and groups", "statement": "Effects on individuals and groups are assessed, and affected people can give feedback that is acted on.", "evidence": "Impact findings; feedback records", "iso": ["A.5.4"], "nist": ["MAP 5.2", "GOVERN 5.1"], "gIso": "A.5", "gNist": "MAP"}, {"code": "R6", "domain": "Risk and impact", "title": "Societal and environmental impact", "statement": "Wider societal and environmental effects, including energy use, are assessed where relevant.", "evidence": "Societal or environmental assessment notes", "iso": ["A.5.5"], "nist": ["MEASURE 2.12"], "gIso": "A.5", "gNist": "MEASURE"}, {"code": "R7", "domain": "Risk and impact", "title": "Tracking emerging risks", "statement": "New and hard-to-measure risks are tracked over time, and risks that cannot be measured are written down.", "evidence": "Risk register updates; list of unmeasured risks", "iso": ["8.2"], "nist": ["MEASURE 3.1", "MEASURE 3.2"], "gIso": "Cl.4-10", "gNist": "MEASURE"}, {"code": "R8", "domain": "Risk and impact", "title": "Risk communication", "statement": "Risks and impacts are recorded and communicated to decision makers and wider stakeholders.", "evidence": "Risk reports; communication log", "iso": ["7.4"], "nist": ["GOVERN 4.2"], "gIso": "Cl.4-10", "gNist": "GOVERN"}, {"code": "I1", "domain": "Inventory and approval", "title": "AI inventory", "statement": "Every AI system, including free public tools and AI inside bought software, is recorded with owner, data and status, and the register is kept current.", "evidence": "Inventory register; periodic confirmation by departments", "iso": ["A.4.2", "8.1"], "nist": ["GOVERN 1.6"], "gIso": "A.4", "gNist": "GOVERN"}, {"code": "I2", "domain": "Inventory and approval", "title": "Use-case approval", "statement": "No new AI use starts until it is assessed and a named approver records a decision and any conditions.", "evidence": "Approval records with conditions", "iso": ["A.9.2", "8.1"], "nist": ["MANAGE 1.1"], "gIso": "A.9", "gNist": "MANAGE"}, {"code": "I3", "domain": "Inventory and approval", "title": "Intended purpose and scope", "statement": "The intended purpose, application scope, supported tasks and limits of each AI system are written down.", "evidence": "Purpose and scope statement per system", "iso": ["A.9.4"], "nist": ["MAP 1.1", "MAP 2.1", "MAP 3.3"], "gIso": "A.9", "gNist": "MAP"}, {"code": "I4", "domain": "Inventory and approval", "title": "Decommissioning", "statement": "AI systems can be disengaged or retired safely, and someone is assigned to do it when behaviour departs from intended use.", "evidence": "Decommissioning procedure; named owner", "iso": [], "nist": ["GOVERN 1.7", "MANAGE 2.4"], "gIso": "", "gNist": "GOVERN"}, {"code": "D1", "domain": "Data", "title": "Data resources and requirements", "statement": "Data used to build, test or run AI is identified, its sources and requirements are recorded, and acquisition follows set rules.", "evidence": "Data register; acquisition criteria", "iso": ["A.4.3", "A.7.2", "A.7.3"], "nist": [], "gIso": "A.4", "gNist": ""}, {"code": "D2", "domain": "Data", "title": "Data quality", "statement": "Data quality criteria are defined and checked, including fitness and representativeness for the intended use.", "evidence": "Data quality checks and results", "iso": ["A.7.4"], "nist": ["MAP 2.3"], "gIso": "A.7", "gNist": "MAP"}, {"code": "D3", "domain": "Data", "title": "Data provenance and preparation", "statement": "The origin and history of data and the steps used to prepare it are recorded.", "evidence": "Lineage record; preparation steps", "iso": ["A.7.5", "A.7.6"], "nist": [], "gIso": "A.7", "gNist": ""}, {"code": "D4", "domain": "Data", "title": "Privacy in AI use", "statement": "Privacy risks of AI use are examined and documented.", "evidence": "Privacy assessment per system", "iso": [], "nist": ["MEASURE 2.10"], "gIso": "", "gNist": "MEASURE"}, {"code": "L1", "domain": "Build and acquire", "title": "Responsible development", "statement": "Objectives and processes for responsible design and development are defined and followed.", "evidence": "Development standard; objectives", "iso": ["A.6.1.2", "A.6.1.3"], "nist": [], "gIso": "A.6", "gNist": ""}, {"code": "L2", "domain": "Build and acquire", "title": "Requirements and specification", "statement": "Requirements, including those from users and the social setting, are specified before building or buying.", "evidence": "Requirements document", "iso": ["A.6.2.2"], "nist": ["MAP 1.6"], "gIso": "A.6", "gNist": "MAP"}, {"code": "L3", "domain": "Build and acquire", "title": "Design and technical documentation", "statement": "Design choices, knowledge limits and how people should use outputs are documented.", "evidence": "Design and technical documentation", "iso": ["A.6.2.3", "A.6.2.7"], "nist": ["MAP 2.2"], "gIso": "A.6", "gNist": "MAP"}, {"code": "L4", "domain": "Build and acquire", "title": "Verification and validation", "statement": "Systems are tested against documented sets and metrics, in conditions like real use, before release. This covers validity, reliability and human-subject evaluation where used.", "evidence": "Test plan, results and sign-off", "iso": ["A.6.2.4"], "nist": ["MEASURE 2.1", "MEASURE 2.2", "MEASURE 2.3", "MEASURE 2.5"], "gIso": "A.6", "gNist": "MEASURE"}, {"code": "L5", "domain": "Build and acquire", "title": "Safety, security and resilience testing", "statement": "Safety, safe failure, security and resilience are evaluated and documented.", "evidence": "Safety and security test reports", "iso": [], "nist": ["MEASURE 2.6", "MEASURE 2.7"], "gIso": "", "gNist": "MEASURE"}, {"code": "L6", "domain": "Build and acquire", "title": "Fairness, transparency and explainability testing", "statement": "Bias, transparency, accountability and explainability are examined and the results documented.", "evidence": "Fairness and explainability test results", "iso": [], "nist": ["MEASURE 2.8", "MEASURE 2.9", "MEASURE 2.11"], "gIso": "", "gNist": "MEASURE"}, {"code": "L7", "domain": "Build and acquire", "title": "Expert and user validation", "statement": "Results are checked with domain experts and users in the setting where the system will run.", "evidence": "Consultation notes; validation sign-off", "iso": [], "nist": ["MEASURE 4.1", "MEASURE 4.2"], "gIso": "", "gNist": "MEASURE"}, {"code": "L8", "domain": "Build and acquire", "title": "Deployment and change control", "statement": "Release to production, and later changes, follow a controlled process with approval.", "evidence": "Release and change records", "iso": ["A.6.2.5"], "nist": [], "gIso": "A.6", "gNist": ""}, {"code": "L9", "domain": "Build and acquire", "title": "Event logs and records", "statement": "Event logs and records needed to trace system behaviour are kept.", "evidence": "Log configuration; retention rule", "iso": ["A.6.2.8"], "nist": [], "gIso": "A.6", "gNist": ""}, {"code": "O1", "domain": "Operate and monitor", "title": "Operation and performance monitoring", "statement": "Performance, behaviour and drift in live use are monitored, and changes seen in field data are recorded.", "evidence": "Monitoring reports", "iso": ["A.6.2.6", "9.1"], "nist": ["MEASURE 2.4", "MEASURE 4.3", "MANAGE 2.2"], "gIso": "A.6", "gNist": "MEASURE"}, {"code": "O2", "domain": "Operate and monitor", "title": "Monitoring and review plan", "statement": "Monitoring and periodic review are planned with defined roles and frequency, covering feedback, appeal and decommissioning.", "evidence": "Monitoring plan with frequency and owners", "iso": [], "nist": ["GOVERN 1.5", "MANAGE 4.1"], "gIso": "", "gNist": "GOVERN"}, {"code": "O3", "domain": "Operate and monitor", "title": "Concern and appeal channels", "statement": "People can raise concerns and appeal outcomes, and feedback that has been reviewed is used to improve systems.", "evidence": "Channel description; case log", "iso": ["A.3.3"], "nist": ["MEASURE 3.3", "GOVERN 5.2"], "gIso": "A.3", "gNist": "MEASURE"}, {"code": "O4", "domain": "Operate and monitor", "title": "Continual improvement", "statement": "Updates to systems and to the programme include measurable improvements with stakeholder input.", "evidence": "Improvement log", "iso": ["10.1"], "nist": ["MANAGE 4.2"], "gIso": "Cl.4-10", "gNist": "MANAGE"}, {"code": "O5", "domain": "Operate and monitor", "title": "Human oversight", "statement": "Where people oversee AI outputs, their role, skill and authority to override are defined.", "evidence": "Oversight procedure; operator training", "iso": ["A.9.2"], "nist": ["GOVERN 3.2", "MAP 3.4", "MAP 3.5"], "gIso": "A.9", "gNist": "GOVERN"}, {"code": "O6", "domain": "Operate and monitor", "title": "Responsible use rules", "statement": "Rules and objectives for responsible use are defined and communicated to everyone who uses AI.", "evidence": "Acceptable use rules; acknowledgement record", "iso": ["A.9.2", "A.9.3"], "nist": [], "gIso": "A.9", "gNist": ""}, {"code": "T1", "domain": "Third parties", "title": "Supplier due diligence", "statement": "AI suppliers are assessed before use for risk, rights, intellectual property and component risks, and internal controls for third-party AI are set.", "evidence": "Supplier assessment", "iso": ["A.10.3"], "nist": ["GOVERN 6.1", "MAP 4.1", "MAP 4.2"], "gIso": "A.10", "gNist": "GOVERN"}, {"code": "T2", "domain": "Third parties", "title": "Supplier monitoring and pre-trained models", "statement": "Third-party AI and pre-trained models are monitored and maintained with controls documented, and outsourced processes stay under control.", "evidence": "Supplier review log", "iso": ["A.10.3", "8.1"], "nist": ["MANAGE 3.1", "MANAGE 3.2"], "gIso": "A.10", "gNist": "MANAGE"}, {"code": "T3", "domain": "Third parties", "title": "Third-party failure planning", "statement": "Contingency plans exist for failure of high-risk third-party data or systems.", "evidence": "Contingency plan; test record", "iso": [], "nist": ["GOVERN 6.2"], "gIso": "", "gNist": "GOVERN"}, {"code": "T4", "domain": "Third parties", "title": "Customer and shared responsibilities", "statement": "What customers and users must do, and who is responsible for what, is agreed. Residual risks are passed on to acquirers and users.", "evidence": "Terms of use; responsibility matrix", "iso": ["A.10.2", "A.10.4"], "nist": ["MANAGE 1.4"], "gIso": "A.10", "gNist": "MANAGE"}, {"code": "C1", "domain": "Transparency", "title": "Information for users and affected people", "statement": "System documentation and clear information reach users and interested parties.", "evidence": "User information; disclosure notices", "iso": ["A.8.2", "A.8.5"], "nist": [], "gIso": "A.8", "gNist": ""}, {"code": "C2", "domain": "Transparency", "title": "External reporting", "statement": "Regulators and other external parties receive the reports and communications they require.", "evidence": "Reporting calendar; submissions", "iso": ["A.8.3", "7.4"], "nist": [], "gIso": "A.8", "gNist": ""}, {"code": "N1", "domain": "Incidents", "title": "Incident identification and response", "statement": "AI incidents and errors are detected, handled and recovered from, and newly found risks are responded to.", "evidence": "Incident procedure; incident log", "iso": ["10.2"], "nist": ["GOVERN 4.3", "MANAGE 2.3", "MANAGE 4.1"], "gIso": "Cl.4-10", "gNist": "GOVERN"}, {"code": "N2", "domain": "Incidents", "title": "Incident communication", "statement": "Incidents and errors are communicated to those affected, to partners and externally where required, and recovery is tracked.", "evidence": "Communication records", "iso": ["A.8.4"], "nist": ["MANAGE 4.3"], "gIso": "A.8", "gNist": "MANAGE"}, {"code": "H1", "domain": "People and awareness", "title": "Competence", "statement": "People involved with AI have the skills they need, are trained on AI risk duties and are assessed for proficiency.", "evidence": "Skills matrix; training records", "iso": ["7.2", "A.4.6"], "nist": ["GOVERN 2.2", "MAP 3.4"], "gIso": "A.4", "gNist": "GOVERN"}, {"code": "H2", "domain": "People and awareness", "title": "Awareness and culture", "statement": "Staff know the policy and their part in it, and are encouraged to question and report.", "evidence": "Awareness material; attendance record", "iso": ["7.3"], "nist": ["GOVERN 4.1"], "gIso": "Cl.4-10", "gNist": "GOVERN"}, {"code": "H3", "domain": "People and awareness", "title": "Resources", "statement": "People, tools, computing and data resources needed for governance and for AI systems are identified and provided.", "evidence": "Resource plan", "iso": ["7.1", "A.4.4", "A.4.5"], "nist": [], "gIso": "A.4", "gNist": ""}, {"code": "Q1", "domain": "Assurance and improvement", "title": "Documented information", "statement": "Required documents and records are created, controlled and kept.", "evidence": "Document control index", "iso": ["7.5.1", "7.5.2", "7.5.3"], "nist": [], "gIso": "Cl.4-10", "gNist": ""}, {"code": "Q2", "domain": "Assurance and improvement", "title": "Internal audit", "statement": "Independent internal audits of AI governance run to a programme and report to management.", "evidence": "Audit plan and reports", "iso": ["9.2.1", "9.2.2"], "nist": ["MEASURE 1.3"], "gIso": "Cl.4-10", "gNist": "MEASURE"}, {"code": "Q3", "domain": "Assurance and improvement", "title": "Management review", "statement": "Management reviews the AI governance system at planned intervals and decides actions.", "evidence": "Review minutes", "iso": ["9.3.1", "9.3.2", "9.3.3"], "nist": [], "gIso": "Cl.4-10", "gNist": ""}, {"code": "Q4", "domain": "Assurance and improvement", "title": "Corrective action", "statement": "Nonconformities are corrected, causes are found and the effectiveness of the fix is checked.", "evidence": "Corrective action log", "iso": ["10.2"], "nist": [], "gIso": "Cl.4-10", "gNist": ""}, {"code": "Q5", "domain": "Assurance and improvement", "title": "Metrics and effectiveness", "statement": "Metrics for significant risks are chosen, documented and reviewed, and the effectiveness of controls and testing processes is evaluated.", "evidence": "Metric definitions; effectiveness reviews", "iso": ["9.1", "6.2"], "nist": ["MEASURE 1.1", "MEASURE 1.2", "MEASURE 2.13"], "gIso": "Cl.4-10", "gNist": "MEASURE"}];
+var LIB=[{"code": "G1", "domain": "Governance and leadership", "title": "Mandate, scope and context", "statement": "The organisation has agreed why it governs AI, what is in scope, who is affected and which internal and external factors matter.", "evidence": "Approved mandate and scope statement; stakeholder list", "ed": "Approved mandate and scope statement", "eo": "Context and stakeholder register, reviewed", "er": "Annual", "sys": false, "iso": ["4.1", "4.2", "4.3", "4.4", "5.1"], "nist": ["MAP 1.3"], "gIso": "Cl.4-10", "gNist": "MAP"}, {"code": "G2", "domain": "Governance and leadership", "title": "AI objectives and change planning", "statement": "Measurable AI governance objectives are set, resourced and planned, and changes to the programme are planned before they are made.", "evidence": "Objectives with owners and dates; change plan", "ed": "Objectives with owners and dates", "eo": "Progress reports; approved changes", "er": "Quarterly", "sys": false, "iso": ["6.2", "6.3"], "nist": ["MAP 1.4"], "gIso": "Cl.4-10", "gNist": "MAP"}, {"code": "G3", "domain": "Governance and leadership", "title": "Roles and responsibilities", "statement": "Roles for AI risk, use, oversight and reporting are named, written down and communicated, including shared duties with partners.", "evidence": "Role descriptions or RACI; communication record", "ed": "RACI or role descriptions", "eo": "Appointments; communication record", "er": "On change", "sys": false, "iso": ["5.3", "A.3.2", "A.10.2"], "nist": ["GOVERN 2.1"], "gIso": "A.3", "gNist": "GOVERN"}, {"code": "G4", "domain": "Governance and leadership", "title": "Executive accountability", "statement": "Senior leaders own AI risk decisions and show commitment through direction, resources and regular attention.", "evidence": "Committee terms; minutes showing AI risk decisions", "ed": "Committee terms of reference", "eo": "Minutes with AI risk decisions", "er": "Quarterly", "sys": false, "iso": ["5.1"], "nist": ["GOVERN 2.3"], "gIso": "Cl.4-10", "gNist": "GOVERN"}, {"code": "G5", "domain": "Governance and leadership", "title": "Diverse and independent input", "statement": "People with different skills and backgrounds, and assessors independent of the build team, inform decisions across the life cycle.", "evidence": "Review panel membership; independent review reports", "ed": "Review panel and independence rule", "eo": "Independent review reports", "er": "Annual", "sys": false, "iso": [], "nist": ["GOVERN 3.1", "MAP 1.2", "MEASURE 1.3"], "gIso": "", "gNist": "GOVERN"}, {"code": "P1", "domain": "Policy and compliance", "title": "AI policy", "statement": "A policy approved by top management states the organisation's commitments, builds trustworthy-AI characteristics into practice and sets transparent risk rules.", "evidence": "Approved policy; publication and acknowledgement record", "ed": "Approved AI policy", "eo": "Publication and staff acknowledgement record", "er": "Annual", "sys": false, "iso": ["5.2", "A.2.2"], "nist": ["GOVERN 1.2", "GOVERN 1.4"], "gIso": "A.2", "gNist": "GOVERN"}, {"code": "P2", "domain": "Policy and compliance", "title": "Policy alignment and review", "statement": "The AI policy is checked against other policies and reviewed at planned intervals or after major change.", "evidence": "Policy review log; list of related policies", "ed": "List of related policies", "eo": "Policy review log", "er": "Annual", "sys": false, "iso": ["A.2.3", "A.2.4"], "nist": [], "gIso": "A.2", "gNist": ""}, {"code": "P3", "domain": "Policy and compliance", "title": "Legal and regulatory duties", "statement": "Legal, regulatory and contract duties that apply to AI are identified, recorded, assigned and tracked.", "evidence": "Obligation register with owners", "ed": "Obligation register with owners", "eo": "Update log; Compliance sign-off", "er": "Quarterly", "sys": false, "iso": ["4.2", "6.1.1"], "nist": ["GOVERN 1.1"], "gIso": "Cl.4-10", "gNist": "GOVERN"}, {"code": "R1", "domain": "Risk and impact", "title": "AI risk assessment", "statement": "A defined method identifies, analyses and evaluates AI risks against set criteria and is applied at planned intervals.", "evidence": "Method document; completed assessments", "ed": "Risk assessment method", "eo": "Completed assessments", "er": "Per system; annual", "sys": true, "iso": ["6.1.1", "6.1.2", "8.2"], "nist": [], "gIso": "Cl.4-10", "gNist": ""}, {"code": "R2", "domain": "Risk and impact", "title": "Risk tolerance and proportionate effort", "statement": "Risk tolerance is set, and the effort spent on each AI system is scaled to it.", "evidence": "Risk appetite statement; tiering rule", "ed": "Risk appetite statement; tiering rule", "eo": "Tier recorded per system", "er": "Annual; per system", "sys": true, "iso": ["6.1.2"], "nist": ["GOVERN 1.3", "MAP 1.5"], "gIso": "Cl.4-10", "gNist": "GOVERN"}, {"code": "R3", "domain": "Risk and impact", "title": "Risk treatment and residual risk", "statement": "Risks are ranked by impact, likelihood and resources, then treated or accepted by a named owner. Residual risk is recorded and non-AI options are weighed.", "evidence": "Risk treatment plan; residual risk acceptance", "ed": "Risk treatment plan template", "eo": "Treatment plans; signed residual-risk acceptance", "er": "Per risk", "sys": false, "iso": ["6.1.3", "8.3"], "nist": ["MANAGE 1.2", "MANAGE 1.3", "MANAGE 1.4", "MANAGE 2.1"], "gIso": "Cl.4-10", "gNist": "MANAGE"}, {"code": "R4", "domain": "Risk and impact", "title": "Impact assessment process", "statement": "A process sets when an AI system impact assessment is needed, what it covers and how results, benefits and costs are recorded.", "evidence": "Impact assessment procedure; completed assessments", "ed": "Impact assessment procedure", "eo": "Completed impact assessments", "er": "Per system", "sys": true, "iso": ["6.1.4", "8.4", "A.5.2", "A.5.3"], "nist": ["MAP 3.1", "MAP 3.2", "MAP 5.1"], "gIso": "A.5", "gNist": "MAP"}, {"code": "R5", "domain": "Risk and impact", "title": "Impact on people and groups", "statement": "Effects on individuals and groups are assessed, and affected people can give feedback that is acted on.", "evidence": "Impact findings; feedback records", "ed": "Method for assessing effects on members and individuals", "eo": "Findings; feedback records", "er": "Per system", "sys": true, "iso": ["A.5.4"], "nist": ["MAP 5.2", "GOVERN 5.1"], "gIso": "A.5", "gNist": "MAP"}, {"code": "R6", "domain": "Risk and impact", "title": "Societal and environmental impact", "statement": "Wider societal and environmental effects, including energy use, are assessed where relevant.", "evidence": "Societal or environmental assessment notes", "ed": "Societal and environmental screening note", "eo": "Assessment notes", "er": "Annual", "sys": false, "iso": ["A.5.5"], "nist": ["MEASURE 2.12"], "gIso": "A.5", "gNist": "MEASURE"}, {"code": "R7", "domain": "Risk and impact", "title": "Tracking emerging risks", "statement": "New and hard-to-measure risks are tracked over time, and risks that cannot be measured are written down.", "evidence": "Risk register updates; list of unmeasured risks", "ed": "Emerging-risk process", "eo": "Register updates; list of unmeasured risks", "er": "Quarterly", "sys": false, "iso": ["8.2"], "nist": ["MEASURE 3.1", "MEASURE 3.2"], "gIso": "Cl.4-10", "gNist": "MEASURE"}, {"code": "R8", "domain": "Risk and impact", "title": "Risk communication", "statement": "Risks and impacts are recorded and communicated to decision makers and wider stakeholders.", "evidence": "Risk reports; communication log", "ed": "Risk reporting calendar", "eo": "Risk reports; communication log", "er": "Quarterly", "sys": false, "iso": ["7.4"], "nist": ["GOVERN 4.2"], "gIso": "Cl.4-10", "gNist": "GOVERN"}, {"code": "I1", "domain": "Inventory and approval", "title": "AI inventory", "statement": "Every AI system, including free public tools and AI inside bought software, is recorded with owner, data and status, and the register is kept current.", "evidence": "Inventory register; periodic confirmation by departments", "ed": "Inventory procedure", "eo": "Inventory export; department confirmations", "er": "Quarterly", "sys": false, "iso": ["A.4.2", "8.1"], "nist": ["GOVERN 1.6"], "gIso": "A.4", "gNist": "GOVERN"}, {"code": "I2", "domain": "Inventory and approval", "title": "Use-case approval", "statement": "No new AI use starts until it is assessed and a named approver records a decision and any conditions.", "evidence": "Approval records with conditions", "ed": "Approval procedure and criteria", "eo": "Approval records with conditions", "er": "Per system", "sys": true, "iso": ["A.9.2", "8.1"], "nist": ["MANAGE 1.1"], "gIso": "A.9", "gNist": "MANAGE"}, {"code": "I3", "domain": "Inventory and approval", "title": "Intended purpose and scope", "statement": "The intended purpose, application scope, supported tasks and limits of each AI system are written down.", "evidence": "Purpose and scope statement per system", "ed": "Purpose and scope template", "eo": "Purpose and scope statement per system", "er": "Per system", "sys": true, "iso": ["A.9.4"], "nist": ["MAP 1.1", "MAP 2.1", "MAP 3.3"], "gIso": "A.9", "gNist": "MAP"}, {"code": "I4", "domain": "Inventory and approval", "title": "Decommissioning", "statement": "AI systems can be disengaged or retired safely, and someone is assigned to do it when behaviour departs from intended use.", "evidence": "Decommissioning procedure; named owner", "ed": "Decommissioning procedure; named owner", "eo": "Decommissioning records", "er": "Per event", "sys": false, "iso": [], "nist": ["GOVERN 1.7", "MANAGE 2.4"], "gIso": "", "gNist": "GOVERN"}, {"code": "D1", "domain": "Data", "title": "Data resources and requirements", "statement": "Data used to build, test or run AI is identified, its sources and requirements are recorded, and acquisition follows set rules.", "evidence": "Data register; acquisition criteria", "ed": "Data requirements and acquisition criteria", "eo": "Data register entries", "er": "Per system", "sys": true, "iso": ["A.4.3", "A.7.2", "A.7.3"], "nist": [], "gIso": "A.4", "gNist": ""}, {"code": "D2", "domain": "Data", "title": "Data quality", "statement": "Data quality criteria are defined and checked, including fitness and representativeness for the intended use.", "evidence": "Data quality checks and results", "ed": "Data quality criteria", "eo": "Quality check results", "er": "Per system; annual", "sys": true, "iso": ["A.7.4"], "nist": ["MAP 2.3"], "gIso": "A.7", "gNist": "MAP"}, {"code": "D3", "domain": "Data", "title": "Data provenance and preparation", "statement": "The origin and history of data and the steps used to prepare it are recorded.", "evidence": "Lineage record; preparation steps", "ed": "Lineage and preparation standard", "eo": "Lineage records", "er": "Per system", "sys": true, "iso": ["A.7.5", "A.7.6"], "nist": [], "gIso": "A.7", "gNist": ""}, {"code": "D4", "domain": "Data", "title": "Privacy in AI use", "statement": "Privacy risks of AI use are examined and documented.", "evidence": "Privacy assessment per system", "ed": "Privacy assessment method", "eo": "Privacy assessment per system; Compliance sign-off", "er": "Per system", "sys": true, "iso": [], "nist": ["MEASURE 2.10"], "gIso": "", "gNist": "MEASURE"}, {"code": "L1", "domain": "Build and acquire", "title": "Responsible development", "statement": "Objectives and processes for responsible design and development are defined and followed.", "evidence": "Development standard; objectives", "ed": "Development standard and objectives", "eo": "Application record on a build", "er": "Per release", "sys": false, "iso": ["A.6.1.2", "A.6.1.3"], "nist": [], "gIso": "A.6", "gNist": ""}, {"code": "L2", "domain": "Build and acquire", "title": "Requirements and specification", "statement": "Requirements, including those from users and the social setting, are specified before building or buying.", "evidence": "Requirements document", "ed": "Requirements template", "eo": "Requirements documents", "er": "Per release", "sys": false, "iso": ["A.6.2.2"], "nist": ["MAP 1.6"], "gIso": "A.6", "gNist": "MAP"}, {"code": "L3", "domain": "Build and acquire", "title": "Design and technical documentation", "statement": "Design choices, knowledge limits and how people should use outputs are documented.", "evidence": "Design and technical documentation", "ed": "Documentation standard", "eo": "Design and technical documents", "er": "Per release", "sys": false, "iso": ["A.6.2.3", "A.6.2.7"], "nist": ["MAP 2.2"], "gIso": "A.6", "gNist": "MAP"}, {"code": "L4", "domain": "Build and acquire", "title": "Verification and validation", "statement": "Systems are tested against documented sets and metrics, in conditions like real use, before release. This covers validity, reliability and human-subject evaluation where used.", "evidence": "Test plan, results and sign-off", "ed": "Test policy", "eo": "Test plan, results and sign-off", "er": "Per release", "sys": false, "iso": ["A.6.2.4"], "nist": ["MEASURE 2.1", "MEASURE 2.2", "MEASURE 2.3", "MEASURE 2.5"], "gIso": "A.6", "gNist": "MEASURE"}, {"code": "L5", "domain": "Build and acquire", "title": "Safety, security and resilience testing", "statement": "Safety, safe failure, security and resilience are evaluated and documented.", "evidence": "Safety and security test reports", "ed": "Security and resilience test criteria", "eo": "Test reports", "er": "Per release", "sys": false, "iso": [], "nist": ["MEASURE 2.6", "MEASURE 2.7"], "gIso": "", "gNist": "MEASURE"}, {"code": "L6", "domain": "Build and acquire", "title": "Fairness, transparency and explainability testing", "statement": "Bias, transparency, accountability and explainability are examined and the results documented.", "evidence": "Fairness and explainability test results", "ed": "Fairness and explainability criteria", "eo": "Test results", "er": "Per release", "sys": false, "iso": [], "nist": ["MEASURE 2.8", "MEASURE 2.9", "MEASURE 2.11"], "gIso": "", "gNist": "MEASURE"}, {"code": "L7", "domain": "Build and acquire", "title": "Expert and user validation", "statement": "Results are checked with domain experts and users in the setting where the system will run.", "evidence": "Consultation notes; validation sign-off", "ed": "Consultation approach", "eo": "Consultation notes; validation sign-off", "er": "Per release", "sys": false, "iso": [], "nist": ["MEASURE 4.1", "MEASURE 4.2"], "gIso": "", "gNist": "MEASURE"}, {"code": "L8", "domain": "Build and acquire", "title": "Deployment and change control", "statement": "Release to production, and later changes, follow a controlled process with approval.", "evidence": "Release and change records", "ed": "Change control procedure", "eo": "Release and change records", "er": "Per release", "sys": false, "iso": ["A.6.2.5"], "nist": [], "gIso": "A.6", "gNist": ""}, {"code": "L9", "domain": "Build and acquire", "title": "Event logs and records", "statement": "Event logs and records needed to trace system behaviour are kept.", "evidence": "Log configuration; retention rule", "ed": "Logging standard; retention rule", "eo": "Log configuration export", "er": "Annual; on change", "sys": false, "iso": ["A.6.2.8"], "nist": [], "gIso": "A.6", "gNist": ""}, {"code": "O1", "domain": "Operate and monitor", "title": "Operation and performance monitoring", "statement": "Performance, behaviour and drift in live use are monitored, and changes seen in field data are recorded.", "evidence": "Monitoring reports", "ed": "Defined monitoring metrics", "eo": "Monitoring reports", "er": "Quarterly", "sys": false, "iso": ["A.6.2.6", "9.1"], "nist": ["MEASURE 2.4", "MEASURE 4.3", "MANAGE 2.2"], "gIso": "A.6", "gNist": "MEASURE"}, {"code": "O2", "domain": "Operate and monitor", "title": "Monitoring and review plan", "statement": "Monitoring and periodic review are planned with defined roles and frequency, covering feedback, appeal and decommissioning.", "evidence": "Monitoring plan with frequency and owners", "ed": "Monitoring plan", "eo": "Plan review record", "er": "Annual", "sys": false, "iso": [], "nist": ["GOVERN 1.5", "MANAGE 4.1"], "gIso": "", "gNist": "GOVERN"}, {"code": "O3", "domain": "Operate and monitor", "title": "Concern and appeal channels", "statement": "People can raise concerns and appeal outcomes, and feedback that has been reviewed is used to improve systems.", "evidence": "Channel description; case log", "ed": "Channel description", "eo": "Case log", "er": "Quarterly", "sys": false, "iso": ["A.3.3"], "nist": ["MEASURE 3.3", "GOVERN 5.2"], "gIso": "A.3", "gNist": "MEASURE"}, {"code": "O4", "domain": "Operate and monitor", "title": "Continual improvement", "statement": "Updates to systems and to the programme include measurable improvements with stakeholder input.", "evidence": "Improvement log", "ed": "Improvement process", "eo": "Improvement log", "er": "Quarterly", "sys": false, "iso": ["10.1"], "nist": ["MANAGE 4.2"], "gIso": "Cl.4-10", "gNist": "MANAGE"}, {"code": "O5", "domain": "Operate and monitor", "title": "Human oversight", "statement": "Where people oversee AI outputs, their role, skill and authority to override are defined.", "evidence": "Oversight procedure; operator training", "ed": "Oversight procedure", "eo": "Operator training; oversight records", "er": "Annual", "sys": false, "iso": ["A.9.2"], "nist": ["GOVERN 3.2", "MAP 3.4", "MAP 3.5"], "gIso": "A.9", "gNist": "GOVERN"}, {"code": "O6", "domain": "Operate and monitor", "title": "Responsible use rules", "statement": "Rules and objectives for responsible use are defined and communicated to everyone who uses AI.", "evidence": "Acceptable use rules; acknowledgement record", "ed": "Acceptable use rules", "eo": "Acknowledgement record", "er": "Annual", "sys": false, "iso": ["A.9.2", "A.9.3"], "nist": [], "gIso": "A.9", "gNist": ""}, {"code": "T1", "domain": "Third parties", "title": "Supplier due diligence", "statement": "AI suppliers are assessed before use for risk, rights, intellectual property and component risks, and internal controls for third-party AI are set.", "evidence": "Supplier assessment", "ed": "Supplier assessment method", "eo": "Completed supplier assessments", "er": "Per supplier", "sys": false, "iso": ["A.10.3"], "nist": ["GOVERN 6.1", "MAP 4.1", "MAP 4.2"], "gIso": "A.10", "gNist": "GOVERN"}, {"code": "T2", "domain": "Third parties", "title": "Supplier monitoring and pre-trained models", "statement": "Third-party AI and pre-trained models are monitored and maintained with controls documented, and outsourced processes stay under control.", "evidence": "Supplier review log", "ed": "Supplier monitoring approach", "eo": "Supplier review log", "er": "Annual, per supplier", "sys": false, "iso": ["A.10.3", "8.1"], "nist": ["MANAGE 3.1", "MANAGE 3.2"], "gIso": "A.10", "gNist": "MANAGE"}, {"code": "T3", "domain": "Third parties", "title": "Third-party failure planning", "statement": "Contingency plans exist for failure of high-risk third-party data or systems.", "evidence": "Contingency plan; test record", "ed": "Contingency plan", "eo": "Test record", "er": "Annual", "sys": false, "iso": [], "nist": ["GOVERN 6.2"], "gIso": "", "gNist": "GOVERN"}, {"code": "T4", "domain": "Third parties", "title": "Customer and shared responsibilities", "statement": "What customers and users must do, and who is responsible for what, is agreed. Residual risks are passed on to acquirers and users.", "evidence": "Terms of use; responsibility matrix", "ed": "Responsibility matrix; terms of use", "eo": "Signed contracts or terms", "er": "Per contract", "sys": false, "iso": ["A.10.2", "A.10.4"], "nist": ["MANAGE 1.4"], "gIso": "A.10", "gNist": "MANAGE"}, {"code": "C1", "domain": "Transparency", "title": "Information for users and affected people", "statement": "System documentation and clear information reach users and interested parties.", "evidence": "User information; disclosure notices", "ed": "Disclosure standard", "eo": "Notices issued", "er": "Per system", "sys": true, "iso": ["A.8.2", "A.8.5"], "nist": [], "gIso": "A.8", "gNist": ""}, {"code": "C2", "domain": "Transparency", "title": "External reporting", "statement": "Regulators and other external parties receive the reports and communications they require.", "evidence": "Reporting calendar; submissions", "ed": "Reporting calendar", "eo": "Submissions made", "er": "Per event", "sys": false, "iso": ["A.8.3", "7.4"], "nist": [], "gIso": "A.8", "gNist": ""}, {"code": "N1", "domain": "Incidents", "title": "Incident identification and response", "statement": "AI incidents and errors are detected, handled and recovered from, and newly found risks are responded to.", "evidence": "Incident procedure; incident log", "ed": "Incident procedure", "eo": "Incident log; post-incident reviews; test", "er": "Per event; annual test", "sys": false, "iso": ["10.2"], "nist": ["GOVERN 4.3", "MANAGE 2.3", "MANAGE 4.1"], "gIso": "Cl.4-10", "gNist": "GOVERN"}, {"code": "N2", "domain": "Incidents", "title": "Incident communication", "statement": "Incidents and errors are communicated to those affected, to partners and externally where required, and recovery is tracked.", "evidence": "Communication records", "ed": "Communication protocol", "eo": "Communication records", "er": "Per event", "sys": false, "iso": ["A.8.4"], "nist": ["MANAGE 4.3"], "gIso": "A.8", "gNist": "MANAGE"}, {"code": "H1", "domain": "People and awareness", "title": "Competence", "statement": "People involved with AI have the skills they need, are trained on AI risk duties and are assessed for proficiency.", "evidence": "Skills matrix; training records", "ed": "Competence criteria or skills matrix", "eo": "Training records", "er": "Annual", "sys": false, "iso": ["7.2", "A.4.6"], "nist": ["GOVERN 2.2", "MAP 3.4"], "gIso": "A.4", "gNist": "GOVERN"}, {"code": "H2", "domain": "People and awareness", "title": "Awareness and culture", "statement": "Staff know the policy and their part in it, and are encouraged to question and report.", "evidence": "Awareness material; attendance record", "ed": "Awareness plan and material", "eo": "Attendance records", "er": "Annual", "sys": false, "iso": ["7.3"], "nist": ["GOVERN 4.1"], "gIso": "Cl.4-10", "gNist": "GOVERN"}, {"code": "H3", "domain": "People and awareness", "title": "Resources", "statement": "People, tools, computing and data resources needed for governance and for AI systems are identified and provided.", "evidence": "Resource plan", "ed": "Resource plan", "eo": "Resource approvals", "er": "Annual", "sys": false, "iso": ["7.1", "A.4.4", "A.4.5"], "nist": [], "gIso": "A.4", "gNist": ""}, {"code": "Q1", "domain": "Assurance and improvement", "title": "Documented information", "statement": "Required documents and records are created, controlled and kept.", "evidence": "Document control index", "ed": "Document control procedure", "eo": "Document index with versions", "er": "Annual", "sys": false, "iso": ["7.5.1", "7.5.2", "7.5.3"], "nist": [], "gIso": "Cl.4-10", "gNist": ""}, {"code": "Q2", "domain": "Assurance and improvement", "title": "Internal audit", "statement": "Independent internal audits of AI governance run to a programme and report to management.", "evidence": "Audit plan and reports", "ed": "Audit programme (team independent of the CISO Office)", "eo": "Audit reports", "er": "Annual", "sys": false, "iso": ["9.2.1", "9.2.2"], "nist": ["MEASURE 1.3"], "gIso": "Cl.4-10", "gNist": "MEASURE"}, {"code": "Q3", "domain": "Assurance and improvement", "title": "Management review", "statement": "Management reviews the AI governance system at planned intervals and decides actions.", "evidence": "Review minutes", "ed": "Review agenda and inputs", "eo": "Review minutes", "er": "Annual", "sys": false, "iso": ["9.3.1", "9.3.2", "9.3.3"], "nist": [], "gIso": "Cl.4-10", "gNist": ""}, {"code": "Q4", "domain": "Assurance and improvement", "title": "Corrective action", "statement": "Nonconformities are corrected, causes are found and the effectiveness of the fix is checked.", "evidence": "Corrective action log", "ed": "Corrective action procedure", "eo": "Corrective action log", "er": "Quarterly", "sys": false, "iso": ["10.2"], "nist": [], "gIso": "Cl.4-10", "gNist": ""}, {"code": "Q5", "domain": "Assurance and improvement", "title": "Metrics and effectiveness", "statement": "Metrics for significant risks are chosen, documented and reviewed, and the effectiveness of controls and testing processes is evaluated.", "evidence": "Metric definitions; effectiveness reviews", "ed": "Metric definitions", "eo": "Effectiveness reviews", "er": "Quarterly", "sys": false, "iso": ["9.1", "6.2"], "nist": ["MEASURE 1.1", "MEASURE 1.2", "MEASURE 2.13"], "gIso": "Cl.4-10", "gNist": "MEASURE"}];
 
 function libRow(c,id,fws){
   var r={id:id,lib:c.code,domain:c.domain,name:c.title,statement:c.statement,owner:'',level:'',expected:c.evidence,evidence:'',isoRefs:c.iso.join('; '),nistRefs:c.nist.join('; '),notes:''};
@@ -229,9 +264,11 @@ function baseConfig(){
       {id:'summary',label:'Executive summary',on:true},
       {id:'inventory',label:'AI inventory',on:true},
       {id:'controls',label:'Controls',on:true},
+      {id:'evidence',label:'Evidence',on:true},
       {id:'roadmap',label:'Roadmap',on:true},
       {id:'frameworks',label:'Frameworks',on:true},
       {id:'actions',label:'Actions and risks',on:true},
+      {id:'reports',label:'Reports',on:true},
       {id:'history',label:'Change history',on:true},
       {id:'setup',label:'Settings',on:true}
     ],
@@ -253,7 +290,7 @@ function baseConfig(){
       approval:['Not requested','Requested','Approved','Approved with conditions','Rejected'],
       approvedDecisions:['Approved','Approved with conditions']
     },
-    rules:{affectsPeopleHigh:true,unapprovedHighRed:true,overdueRedDays:5,riskHigh:15,riskMed:8,doneStatus:'Done',riskStatus:'At risk',inUseStatus:'In use'},
+    rules:{affectsPeopleHigh:true,unapprovedHighRed:true,overdueRedDays:5,riskHigh:15,riskMed:8,evGreenPct:80,evAmberPct:50,evSoonDays:60,doneStatus:'Done',riskStatus:'At risk',inUseStatus:'In use'},
     fields:{inventory:[],controls:[],roadmap:[],actions:[],risks:[]},
     labels:{inventory:{},controls:{},roadmap:{},actions:{},risks:{}},
     frameworks:[
@@ -267,7 +304,7 @@ function baseConfig(){
     ]
   };
 }
-function emptyData(){return {inventory:[],controls:[],roadmap:[],actions:[],risks:[]}}
+function emptyData(){return {inventory:[],controls:[],roadmap:[],actions:[],risks:[],evidence:[],audits:[]}}
 function sample(){
   var T=new Date(),D=function(n){return iso(addDays(T,n))};
   var c=baseConfig();c.org='Sample Organisation';c.sample=true;
@@ -287,7 +324,7 @@ function sample(){
       inv('AI-010','Translation assistant','Translates internal notices',P,'Human resources','HR executive','Vendor A','Not known','Not known','In use','Not known','Data use to be confirmed'),
       inv('AI-011','Image generator','Created slide illustrations',P,'Operations','Team lead','Vendor G','Public data only','No','Stopped','No')
     ],
-    controls:[],roadmap:[],actions:[],risks:[]
+    controls:[],roadmap:[],actions:[],risks:[],evidence:[],audits:[]
   };
   var APPR={'AI-001':['Not requested'],'AI-002':['Approved','AI governance committee',-40,''],'AI-003':['Approved with conditions','AI governance committee',-35,'Enterprise licence only; no secrets in prompts'],'AI-004':['Requested'],'AI-005':['Approved','AI governance committee',-90,''],'AI-006':['Approved with conditions','AI governance committee',-60,'Mask identifiers before upload'],'AI-007':['Not requested'],'AI-008':['Approved','AI governance committee',-45,''],'AI-009':['Requested'],'AI-010':['Not requested'],'AI-011':['Rejected','AI governance committee',-20,'Output could not be checked']};
   data.inventory.forEach(function(r){var a=APPR[r.id];r.approved=a[0];r.approver=a[1]||'';r.decided=a[2]?D(a[2]):'';r.conditions=a[3]||''});
@@ -297,6 +334,7 @@ function sample(){
     var r=libRow(l,'CT-'+String(i+1).padStart(3,'0'),c.frameworks),lv=pat[i%pat.length];
     r.level=M[lv];r.owner=OWN[l.domain]||'Governance lead';
     if((lv===3&&i!==11)||(lv===2&&i%3===0))r.evidence='Sample reference (illustrative)';
+    if(l.code==='R6'){r.applies='Not applicable';r.naReason='Screened out: no use case with societal-scale effect (sample)';r.naBy='AI governance committee'}
     data.controls.push(r);
   });
   var rm=function(id,phase,act,owner,s,e,st){data.roadmap.push({id:id,phase:phase,activity:act,owner:owner,start:D(s),end:D(e),status:st})};
@@ -327,6 +365,20 @@ function sample(){
   rk('RK-004','Wrong or biased output affects a decision about a person',2,5,'Human oversight and testing','Risk lead','Open');
   rk('RK-005','The register becomes out of date',4,2,'Quarterly confirmation by department heads','Security lead','Open');
   rk('RK-006','Too few skills to assess AI risk',3,3,'Training and external support','Governance lead','Open');
+  var ev=function(id,title,kind,ctl,sys,coll,until,owner){data.evidence.push({id:id,title:title,kind:kind,controls:ctl,systems:sys||'',link:'Sample location (illustrative)',fingerprint:sha256('sample '+id),owner:owner,collected:D(coll),validUntil:until==null?'':D(until),notes:''})};
+  ev('EV-001','Approved mandate and scope statement','Design','G1','',-80,285,'Executive sponsor');
+  ev('EV-002','Context and stakeholder register, reviewed','Operating','G1','',-30,335,'Governance lead');
+  ev('EV-003','Approved AI policy','Design','P1','',-45,320,'Compliance lead');
+  ev('EV-004','Staff acknowledgement record','Operating','P1','',-30,335,'Compliance lead');
+  ev('EV-005','Committee terms of reference','Design','G4','',-100,null,'Executive sponsor');
+  ev('EV-006','Committee minutes with AI risk decisions','Operating','G4','',-100,-10,'Executive sponsor');
+  ev('EV-007','Inventory procedure','Design','I1','',-60,null,'Security lead');
+  ev('EV-008','Inventory export and department confirmations','Operating','I1','',-20,70,'Security lead');
+  ev('EV-009','Approval procedure and criteria','Design','I2','',-55,null,'Governance lead');
+  ev('EV-010','Approval record for the meeting assistant','Operating','I2','AI-002',-40,null,'Governance lead');
+  ev('EV-011','Approval record for the code assistant','Operating','I2','AI-003',-35,null,'Governance lead');
+  ev('EV-012','Management review minutes','Operating','Q3','',-200,-20,'Executive sponsor');
+  data.audits.push({id:'AU-001',audit:'Internal review walkthrough (sample)',auditor:'Internal audit',date:D(-15),items:'EV-003; EV-004; EV-008',shared:'Read access to the evidence folder',notes:'Illustrative entry'});
   return {v:1,cfg:c,data:data,log:[],logBase:GENESIS,seals:[]};
 }
 
@@ -334,8 +386,9 @@ function sample(){
 var KEY='ai-governance-dashboard-v1',S,storageOK=true,saveT=null;
 var GENESIS=new Array(65).join('0');
 var SHA_K=[0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
-function sha256(str){
-  var m=new TextEncoder().encode(str),l=m.length,n=((l+9+63)>>6)<<6,w=new Uint8Array(n);
+function sha256(str){return sha256b(new TextEncoder().encode(str))}
+function sha256b(m){
+  var l=m.length,n=((l+9+63)>>6)<<6,w=new Uint8Array(n);
   w.set(m);w[l]=0x80;
   var dv=new DataView(w.buffer);dv.setUint32(n-8,Math.floor(l*8/4294967296));dv.setUint32(n-4,(l*8)>>>0);
   var H=[0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19],W=new Array(64),o,i,v;
@@ -367,6 +420,9 @@ function normalise(x){
   if(!Array.isArray(cfg.frameworks))cfg.frameworks=b.frameworks;
   if(!Array.isArray(cfg.pages)||!cfg.pages.length)cfg.pages=b.pages;
   if(!cfg.pages.some(function(p){return p.id==='setup'}))cfg.pages.push({id:'setup',label:'Settings',on:true});
+  var pi;
+  if(!cfg.pages.some(function(p){return p.id==='evidence'})){pi=cfg.pages.map(function(p){return p.id}).indexOf('controls');cfg.pages.splice(pi<0?cfg.pages.length:pi+1,0,{id:'evidence',label:'Evidence',on:true})}
+  if(!cfg.pages.some(function(p){return p.id==='reports'})){pi=cfg.pages.map(function(p){return p.id}).indexOf('history');if(pi<0)pi=cfg.pages.map(function(p){return p.id}).indexOf('setup');cfg.pages.splice(pi<0?cfg.pages.length:pi,0,{id:'reports',label:'Reports',on:true})}
   var data=Object.assign(emptyData(),x.data||{});
   for(k in data)if(!Array.isArray(data[k]))data[k]=[];
   if(!cfg.pages.some(function(p){return p.id==='history'})){var si=cfg.pages.map(function(p){return p.id}).indexOf('setup');cfg.pages.splice(si<0?cfg.pages.length:si,0,{id:'history',label:'Change history',on:true})}
@@ -448,6 +504,12 @@ function cols(t){
       if(r.evidence&&String(r.evidence).trim())return 'Evidence recorded';
       return L.maturity.length&&r.level===L.maturity[L.maturity.length-1]?'Evidence missing':'';
     },cls:function(v){return v==='Evidence missing'?'warn':'good'},w:140});
+    add('evstat','Evidence status',{calc:function(r){
+      if(!named(r))return '';if(isNA(r))return 'Not applicable';
+      var a=evAssess(r);return a.status+(claimed(r)&&(a.status==='None'||a.status==='Expired')?' – flagged':'');
+    },cls:evStatCls,w:160});
+    add('applies','Applies?',{type:'select',opts:['Applies','Not applicable'],w:130});
+    add('naReason','Reason if not applicable',{w:220});add('naBy','Not applicable approved by',{w:170});
     add('isoRefs','ISO/IEC 42001 references',{w:200});add('nistRefs','NIST AI RMF references',{w:240});
     S.cfg.frameworks.forEach(function(f){
       c.push({k:'fw_'+f.id,label:f.name+' group',w:230,type:'select',fw:1,opts:f.groups.map(function(g){return {v:g.id,l:gLabel(g)}})});
@@ -474,11 +536,21 @@ function cols(t){
     add('band','Rating',{calc:function(r){return bandOf(scoreOf(r))},cls:chipCls,w:100});
     add('treatment','Treatment',{w:260});add('owner','Owner',{w:150});
     add('status','Status',{type:'select',opts:L.riskStatus,w:110});
+  }else if(t==='evidence'){
+    add('id','ID',{ro:1,w:70});add('title','Evidence item',{w:240});add('kind','Kind',{type:'select',opts:EV_KINDS,w:110});
+    add('controls','Supports controls (codes or IDs)',{w:180});add('systems','AI systems or risks (IDs)',{w:170});
+    add('link','Location (link or file path)',{w:260});add('fingerprint','Fingerprint (SHA-256)',{w:260});add('owner','Owner',{w:140});
+    add('collected','Collected',{type:'date',w:140});add('validUntil','Valid until',{type:'date',w:140});
+    add('status','Status',{calc:evItemStatus,cls:evItemCls,w:190});add('notes','Notes',{w:200});
+  }else if(t==='audits'){
+    add('id','ID',{ro:1,w:70});add('audit','Audit or review',{w:220});add('auditor','Auditor or requester',{w:170});
+    add('date','Visit or request date',{type:'date',w:140});add('items','Evidence shared (IDs)',{w:220});
+    add('shared','Shared with and how',{w:220});add('check','Check',{calc:auItemStatus,cls:function(v){return v.indexOf('Unknown')===0?'warn':'mute'},w:150});add('notes','Notes',{w:200});
   }
   (S.cfg.fields[t]||[]).forEach(function(f){c.push({k:f.k,label:labelOf(t,f.k,f.label),w:150,custom:1})});
   return c;
 }
-var PREFIX={inventory:'AI-',controls:'CT-',roadmap:'RM-',actions:'AC-',risks:'RK-'};
+var PREFIX={inventory:'AI-',controls:'CT-',roadmap:'RM-',actions:'AC-',risks:'RK-',evidence:'EV-',audits:'AU-'};
 function nextId(t){
   var m=0;S.data[t].forEach(function(r){var n=parseInt(String(r.id||'').replace(/\D/g,''),10);if(n>m)m=n});
   return PREFIX[t]+String(m+1).padStart(3,'0');
@@ -490,6 +562,8 @@ function newRow(t){
   if(t==='roadmap'){r.phase=L.phases[0];r.status=L.workStatus[0]}
   if(t==='actions'){r.status=L.workStatus[0];r.decision='No'}
   if(t==='risks'){r.likelihood='3';r.impact='3';r.status=L.riskStatus[0]}
+  if(t==='evidence')r.collected=iso(new Date());
+  if(t==='audits')r.date=iso(new Date());
   return r;
 }
 
@@ -526,6 +600,118 @@ function ragState(st){
   if(red.length)return {level:'Red',cls:'crit',reasons:red.concat(amb)};
   if(amb.length)return {level:'Amber',cls:'warn',reasons:amb};
   return {level:'Green',cls:'good',reasons:['No overdue actions, items at risk or unrated systems.']};
+}
+
+/* ---------- evidence ---------- */
+var EV_KINDS=['Design','Operating'];
+function named(r){return r.name&&String(r.name).trim()}
+function pl(n,w){return n+' '+w+(n===1?'':'s')}
+function hexOf(buf){return Array.prototype.map.call(new Uint8Array(buf),function(b){return ('0'+b.toString(16)).slice(-2)}).join('')}
+function hashFile(file,ok,fail){
+  var MAXF=100*1048576,SLOW=20*1048576;
+  if(file.size>MAXF){fail('This file is larger than 100 MB. Use a smaller file, or work out the fingerprint elsewhere and type it in.');return}
+  var rd=new FileReader();
+  function slow(buf){if(buf.byteLength>SLOW){fail('This browser cannot fingerprint a file larger than 20 MB here. Use a smaller file, or work out the fingerprint elsewhere and type it in.');return}ok(sha256b(new Uint8Array(buf)))}
+  rd.onerror=function(){fail('The file could not be read.')};
+  rd.onload=function(){
+    var buf=rd.result;
+    if(window.crypto&&crypto.subtle&&crypto.subtle.digest){crypto.subtle.digest('SHA-256',buf).then(function(d){ok(hexOf(d))},function(){slow(buf)})}
+    else slow(buf);
+  };
+  rd.readAsArrayBuffer(file);
+}
+function evItems(){return S.data.evidence.filter(function(e){return (e.title&&String(e.title).trim())||e.link||e.fingerprint})}
+function evCurrent(e){var v=e.validUntil;return !v||!parseD(v)||dayDiff(v,S.cfg.asAt)>=0}
+function evSoon(e){var v=e.validUntil;if(!v||!parseD(v))return false;var d=dayDiff(v,S.cfg.asAt);return d>=0&&d<=S.cfg.rules.evSoonDays}
+function ctlKeys(c){return [String(c.lib||'').toUpperCase(),String(c.id||'').toUpperCase()].filter(Boolean)}
+function evFor(c){var k=ctlKeys(c);return evItems().filter(function(e){return splitRefs(e.controls).some(function(x){return k.indexOf(x)>=0})})}
+function specOf(c){var l=LIB.filter(function(x){return x.code===c.lib})[0];return l?{d:l.ed,o:l.eo,r:l.er,sys:!!l.sys}:null}
+function isNA(c){return c.applies==='Not applicable'}
+function claimed(c){var M=S.cfg.lists.maturity,i=M.indexOf(c.level);return M.length>=3&&i>=M.length-2}
+function evAssess(c){
+  var items=evFor(c),cur=items.filter(evCurrent),sp=specOf(c),opOf=function(e){return e.kind==='Operating'};
+  var a={n:items.length,cur:cur.length,design:cur.some(function(e){return e.kind==='Design'}),op:false,cov:null,gap:''};
+  if(sp&&sp.sys){
+    var sy=S.data.inventory.filter(function(r){return named(r)&&inUse(r)});
+    if(sy.length){
+      var ok=sy.filter(function(s){var id=String(s.id).toUpperCase();return cur.some(function(e){return opOf(e)&&splitRefs(e.systems).indexOf(id)>=0})}).length;
+      a.cov={ok:ok,of:sy.length};a.op=ok===sy.length;
+    }else a.op=cur.some(opOf);
+  }else a.op=cur.some(opOf);
+  a.status=!a.n?'None':!a.cur?'Expired':(a.design&&a.op?'Complete':'Partial');
+  if(a.status==='None')a.gap='No evidence recorded';
+  else if(a.status==='Expired')a.gap='All evidence has expired';
+  else if(a.status==='Partial'){
+    var g=[];if(!a.design)g.push('design evidence');
+    if(!a.op)g.push(a.cov?'operating evidence for '+(a.cov.of-a.cov.ok)+' of '+a.cov.of+' in-use systems':'operating evidence');
+    a.gap='Missing: '+g.join('; ');
+  }
+  return a;
+}
+function evSummary(){
+  var C=S.data.controls.filter(named),o={rows:[],Complete:0,Partial:0,None:0,Expired:0,na:0,flagged:0};
+  C.forEach(function(c){
+    var na=isNA(c),a=na?{status:'Not applicable',n:0,cur:0,gap:'',cov:null}:evAssess(c);
+    var f=!na&&claimed(c)&&(a.status==='None'||a.status==='Expired');
+    o.rows.push({c:c,a:a,flag:f});
+    if(na)o.na++;else{o[a.status]++;if(f)o.flagged++}
+  });
+  o.total=C.length;o.app=C.length-o.na;o.pct=o.app?Math.round(o.Complete/o.app*100):null;
+  return o;
+}
+function evRate(pct){var R=S.cfg.rules;if(pct==null)return {l:'No data',cls:'mute'};return pct>=R.evGreenPct?{l:'Green',cls:'good'}:pct>=R.evAmberPct?{l:'Amber',cls:'warn'}:{l:'Red',cls:'crit'}}
+function evStatCls(v){return v.indexOf('flagged')>=0||v.indexOf('Expired')===0?'crit':({Complete:'good',Partial:'warn',None:'warn'})[v]||'mute'}
+function evRoll(sum,groups,keyOf){
+  var mk=function(g){return {id:g.id,label:g.label,app:0,Complete:0,Partial:0,Gap:0,na:0}};
+  var out=groups.map(mk),other=mk({id:'',label:'Not mapped'});
+  sum.rows.forEach(function(x){
+    var k=keyOf(x.c),g=out.filter(function(o){return o.id===k})[0]||other;
+    if(x.a.status==='Not applicable'){g.na++;return}
+    g.app++;if(x.a.status==='Complete')g.Complete++;else if(x.a.status==='Partial')g.Partial++;else g.Gap++;
+  });
+  out.push(other);
+  out=out.filter(function(g){return g.app||g.na});
+  out.forEach(function(g){g.pct=g.app?Math.round(g.Complete/g.app*100):null;g.rate=evRate(g.pct)});
+  return out;
+}
+function evAreas(sum){
+  var res=[{name:'Control domain',rows:evRoll(sum,S.cfg.lists.domains.map(function(d){return {id:d,label:d}}),function(c){return c.domain})}];
+  S.cfg.frameworks.forEach(function(f){
+    res.push({name:f.name,rows:evRoll(sum,f.groups.map(function(g){return {id:g.id,label:gLabel(g)}}),function(c){return c['fw_'+f.id]})});
+  });
+  return res;
+}
+function evGaps(sum){
+  var M=S.cfg.lists.maturity,rank={None:2,Expired:2,Partial:1};
+  return sum.rows.filter(function(x){return x.a.status!=='Complete'&&x.a.status!=='Not applicable'}).sort(function(a,b){
+    return ((+b.flag)-(+a.flag))||((rank[b.a.status]||0)-(rank[a.a.status]||0))||(M.indexOf(b.c.level)-M.indexOf(a.c.level));
+  });
+}
+function evLatest(c){var d='';evFor(c).forEach(function(e){if(parseD(e.collected)&&(!d||e.collected>d))d=e.collected});return d}
+function evRefProblems(e){
+  var ids={},sy={},bad;
+  S.data.controls.forEach(function(c){ctlKeys(c).forEach(function(k){ids[k]=1})});
+  S.data.inventory.concat(S.data.risks).forEach(function(r){if(r.id)sy[String(r.id).toUpperCase()]=1});
+  bad=splitRefs(e.controls).filter(function(x){return !ids[x]}).concat(splitRefs(e.systems).filter(function(x){return !sy[x]}));
+  return bad;
+}
+function evItemStatus(e){
+  if(!((e.title&&String(e.title).trim())||e.link||e.fingerprint))return '';
+  if(!e.kind)return 'Set Design or Operating';
+  if(!splitRefs(e.controls).length)return 'Not linked to a control';
+  if(evRefProblems(e).length)return 'Unknown reference';
+  if(e.fingerprint&&!/^[0-9a-f]{64}$/i.test(String(e.fingerprint).trim()))return 'Check fingerprint';
+  if(!evCurrent(e))return 'Expired';
+  if(evSoon(e))return 'Expires in '+pl(dayDiff(e.validUntil,S.cfg.asAt),'day');
+  return 'Current';
+}
+function evItemCls(v){return v==='Current'?'good':v==='Expired'?'crit':'warn'}
+function auItemStatus(r){
+  var ids=splitRefs(r.items),have={};
+  if(!ids.length)return '';
+  S.data.evidence.forEach(function(e){have[String(e.id).toUpperCase()]=1});
+  var bad=ids.filter(function(x){return !have[x]});
+  return bad.length?'Unknown: '+bad.join(', '):pl(ids.length,'item');
 }
 
 /* ---------- csv ---------- */
@@ -655,7 +841,7 @@ function tableEditor(t,opt){
       rd.onload=function(){ta.value=String(rd.result)};rd.readAsText(f);
     });
     var go=h('button',{class:'btn pri',text:'Import'});
-    var close=modal('Import into '+({inventory:'the AI inventory',controls:'controls',roadmap:'the roadmap',actions:'actions',risks:'risks'})[t],
+    var close=modal('Import into '+({inventory:'the AI inventory',controls:'controls',roadmap:'the roadmap',actions:'actions',risks:'risks',evidence:'the evidence index',audits:'the audit-use log'})[t],
       h('div',{class:'rows'},h('p',{class:'note',text:'Column headings are matched to the headings in the table. Unknown columns are ignored. Dates read as YYYY-MM-DD or DD/MM/YYYY.'}),file,ta,mode,msg),
       [go,h('button',{class:'btn',text:'Cancel',onclick:function(){close()}})]);
     go.addEventListener('click',function(){
@@ -961,7 +1147,7 @@ PAGES.actions=function(root){
 
 function fmtT(t){var d=new Date(t);if(isNaN(d))return '';return iso(d)+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')}
 PAGES.history=function(root){
-  var TN={inventory:'AI inventory',controls:'Controls',roadmap:'Roadmap',actions:'Actions',risks:'Risks',history:'History'},f={t:'',q:''},tb=h('div'),cnt=h('span',{class:'cnt'});
+  var TN={inventory:'AI inventory',controls:'Controls',roadmap:'Roadmap',actions:'Actions',risks:'Risks',evidence:'Evidence',audits:'Audit use',history:'History'},f={t:'',q:''},tb=h('div'),cnt=h('span',{class:'cnt'});
   function filtered(){
     return S.log.slice().reverse().filter(function(e){return (!f.t||e.table===f.t)&&(!f.q||[e.id,e.field,e.from,e.to,e.who].join(' ').toLowerCase().indexOf(f.q)>=0)});
   }
@@ -1080,6 +1266,9 @@ PAGES.setup=function(root){
     fld('Red status when an action is overdue by more than (days)',txt(R,'overdueRedDays','number'),'r-od'),
     fld('Risk score for High (likelihood × impact, from)',txt(R,'riskHigh','number'),'r-rh'),
     fld('Risk score for Medium (from)',txt(R,'riskMed','number'),'r-rm'),
+    fld('Evidence rating Green when complete evidence is at least (%)',txt(R,'evGreenPct','number'),'r-eg'),
+    fld('Evidence rating Amber when complete evidence is at least (%)',txt(R,'evAmberPct','number'),'r-ea'),
+    fld('Evidence counts as expiring soon within (days)',txt(R,'evSoonDays','number'),'r-es'),
     sl('Status that means an action or activity is done','doneStatus',cfg.lists.workStatus),
     sl('Status that means an item is at risk','riskStatus',cfg.lists.workStatus),
     sl('Inventory status that means a system is in use','inUseStatus',cfg.lists.invStatus));
@@ -1121,6 +1310,226 @@ PAGES.setup=function(root){
   db.append(confirmBtn('Clear all rows',function(){S.data=emptyData();S.cfg.sample=false;save();render()}));
   db.append(confirmBtn('Reset everything',function(){S=normalise({cfg:baseConfig(),data:emptyData()});save();render()}));
   root.append(card('Data','Export a backup, load the sample, or start again. Clearing rows keeps your settings, lists and frameworks.',db));
+};
+
+/* ---------- evidence page ---------- */
+function fileTool(title,note,onHash){
+  var inp=h('input',{type:'file','aria-label':'Choose a file'}),out=h('p',{class:'note',text:'Nothing chosen yet.',style:'white-space:pre-wrap;overflow-wrap:anywhere'}),acts=h('div',{class:'rowline'}),close;
+  inp.addEventListener('change',function(){
+    var f=inp.files[0];if(!f)return;
+    out.textContent='Calculating the fingerprint...';acts.replaceChildren();
+    hashFile(f,function(hx){onHash(f,hx,out,acts,function(){close()})},function(m){out.textContent=m});
+  });
+  close=modal(title,h('div',{class:'rows'},h('p',{class:'note',text:note}),inp,out,acts),[h('button',{class:'btn',text:'Close',onclick:function(){close()}})]);
+}
+function fmtSize(n){return n<1024?n+' bytes':n<1048576?(n/1024).toFixed(1)+' KB':(n/1048576).toFixed(1)+' MB'}
+function covTable(rows,label){
+  var tb=h('tbody');
+  rows.forEach(function(g){
+    tb.append(h('tr',null,h('td',{text:g.label,style:'padding:6px 8px'}),h('td',{text:g.app,style:'padding:6px 8px;text-align:right'}),h('td',{text:g.Complete,style:'padding:6px 8px;text-align:right'}),h('td',{text:g.Partial,style:'padding:6px 8px;text-align:right'}),h('td',{text:g.Gap,style:'padding:6px 8px;text-align:right'}),h('td',{style:'padding:6px 8px'},g.app?chip(g.rate.l+' '+g.pct+'%',g.rate.cls):chip('Not applicable','mute'))));
+  });
+  if(!rows.length)tb.append(h('tr',null,h('td',{class:'empty',colspan:6,text:'No controls recorded yet.'})));
+  var th=h('tr');[label,'Controls','Complete','Partial','None or expired','Rating'].forEach(function(x,i){th.append(h('th',{text:x,style:i&&i<5?'text-align:right':''}))});
+  return h('div',{class:'tw',style:'max-height:none'},h('table',{class:'grid'},h('thead',null,th),tb));
+}
+PAGES.evidence=function(root){
+  var vis=h('div'),teE,teA;
+  function drawV(){
+    var s=evSummary(),M=S.cfg.lists.maturity,R=S.cfg.rules,items=evItems();
+    var soon=items.filter(evSoon).length,exp=items.filter(function(e){return !evCurrent(e)}).length;
+    var tile=function(l,v,x){return h('div',{class:'kpi'},h('div',{class:'l',text:l}),h('div',{class:'n',text:v}),h('div',{class:'s',text:x}))};
+    var kp=h('div',{class:'kpis'},
+      tile('Controls with complete evidence',s.app?s.Complete+' of '+s.app:'–',s.na?pl(s.na,'control')+' marked not applicable':'Every control applies'),
+      tile('Partly evidenced',s.Partial,'A design or operating item is missing'),
+      tile('No current evidence',s.None+s.Expired,s.Expired+' with expired evidence only'),
+      tile('Claimed without evidence',s.flagged,M.length>=3?'Maturity "'+M[M.length-2]+'" or above':'Needs a longer maturity ladder'),
+      tile('Evidence items',items.length,soon+' expiring within '+R.evSoonDays+' days, '+exp+' expired'));
+    var segs=[{label:'Complete',value:s.Complete,color:'var(--good)'},{label:'Partial',value:s.Partial,color:'var(--warn)'},{label:'None',value:s.None,color:'var(--neutral)'},{label:'Expired',value:s.Expired,color:'var(--crit)'}];
+    var stack=h('div',{class:'stack',role:'img','aria-label':segs.map(function(x){return x.label+' '+x.value}).join(', ')});
+    segs.forEach(function(x){if(x.value&&s.app)stack.append(h('i',{style:'width:'+(x.value/s.app*100)+'%;background:'+x.color,title:x.label+': '+x.value}))});
+    var areas=evAreas(s),gaps=evGaps(s).slice(0,10),gt=h('tbody'),gh=h('tr');
+    ['Code','Control','Owner','Maturity','Position'].forEach(function(x){gh.append(h('th',{text:x}))});
+    gaps.forEach(function(x){gt.append(h('tr',null,h('td',{class:'id',text:x.c.lib||x.c.id}),h('td',{text:x.c.name,style:'padding:6px 8px'}),h('td',{text:x.c.owner||'–',style:'padding:6px 8px'}),h('td',{text:x.c.level||'–',style:'padding:6px 8px'}),h('td',{style:'padding:6px 8px'},chip(x.a.status+(x.flag?' – flagged':''),evStatCls(x.a.status+(x.flag?' – flagged':''))),' '+x.a.gap)))});
+    if(!gaps.length)gt.append(h('tr',null,h('td',{class:'empty',colspan:5,text:s.total?'No gaps. Every applicable control has complete, current evidence.':'No controls recorded yet. Load the control library on the Controls page.'})));
+    var spec=h('tbody'),sh=h('tr');
+    ['Code','Control','Design evidence','Operating evidence','Refresh','Status'].forEach(function(x){sh.append(h('th',{text:x}))});
+    s.rows.forEach(function(x){
+      var sp=specOf(x.c),st=x.a.status+(x.flag?' – flagged':'');
+      spec.append(h('tr',null,h('td',{class:'id',text:x.c.lib||x.c.id}),h('td',{text:x.c.name,style:'padding:6px 8px'}),h('td',{text:sp?sp.d:(x.c.expected||'–'),style:'padding:6px 8px'}),h('td',{text:sp?sp.o:'–',style:'padding:6px 8px'}),h('td',{text:sp?sp.r+(sp.sys?' (per system)':''):'–',style:'padding:6px 8px'}),h('td',{style:'padding:6px 8px'},chip(st,evStatCls(st)))));
+    });
+    if(!s.rows.length)spec.append(h('tr',null,h('td',{class:'empty',colspan:6,text:'No controls recorded yet.'})));
+    vis.replaceChildren(
+      h('div',{class:'card'},h('h2',{text:'Evidence position'}),
+        h('p',{class:'lead',text:'A control is Complete when a current design item and a current operating item are linked to it. For per-system controls, operating evidence is needed for every in-use AI system. Evidence without an end date does not expire.'}),
+        s.app?[stack,legend(segs)]:emptyNote('No controls recorded yet.')),
+      kp,
+      h('div',{class:'card'},h('h2',{text:'Coverage by control domain'}),covTable(areas[0].rows,'Domain')),
+      h('div',{class:'card'},h('h2',{text:'Coverage by framework group'}),areas.slice(1).map(function(a){return h('div',{style:'margin-bottom:12px'},covTable(a.rows,a.name))})),
+      h('div',{class:'card'},h('h2',{text:'Controls that most need evidence'}),
+        h('p',{class:'lead',text:'Flagged controls are marked at a high maturity level but have no current evidence. The MD gap report on the Reports page lists them all.'}),
+        h('div',{class:'tw',style:'max-height:none'},h('table',{class:'grid'},h('thead',null,gh),gt))),
+      h('div',{class:'card'},h('details',null,h('summary',{text:'Evidence specification: what each control needs'}),h('div',{class:'tw',style:'max-height:480px;margin-top:10px'},h('table',{class:'grid'},h('thead',null,sh),spec)))));
+  }
+  var addF=h('button',{class:'btn',text:'Add from file',onclick:function(){
+    fileTool('Add evidence from a file','Choose the file. The fingerprint is worked out in this browser. The file is not uploaded or stored; keep it in your evidence library and record where in the Location column.',function(f,hx,out,acts,close){
+      out.textContent='File: '+f.name+' ('+fmtSize(f.size)+')\nFingerprint (SHA-256): '+hx;
+      acts.replaceChildren(h('button',{class:'btn pri',text:'Add as an evidence item',onclick:function(){
+        var r=newRow('evidence');r.title=f.name;r.fingerprint=hx;S.data.evidence.push(r);logChange('evidence',r.id,'Row','','Added from file '+f.name);save();close();render();
+      }}));
+    });
+  }});
+  var chkF=h('button',{class:'btn',text:'Check a file',onclick:function(){
+    fileTool('Check a file against recorded evidence','Choose a file to see whether it matches the fingerprint of a recorded evidence item. A match shows the file is unchanged since the fingerprint was recorded.',function(f,hx,out){
+      var m=S.data.evidence.filter(function(e){return String(e.fingerprint||'').trim().toLowerCase()===hx});
+      out.textContent=(m.length?'Match. This file has the same fingerprint as '+m.map(function(e){return e.id+' ('+(e.title||'untitled')+')'}).join(', ')+'. It has not changed since the fingerprint was recorded.':'No match. No evidence item carries this fingerprint. The file differs from every recorded item, or its fingerprint was never recorded.')+'\n\nFile: '+f.name+' ('+fmtSize(f.size)+')\nFingerprint (SHA-256): '+hx;
+    });
+  }});
+  teE=tableEditor('evidence',{onChange:drawV,buttons:h('span',{style:'display:contents'},addF,chkF)});
+  teA=tableEditor('audits',{onChange:drawV});
+  drawV();
+  root.append(vis,
+    h('div',{class:'card'},h('h2',{text:'Evidence index'}),
+      h('p',{class:'lead',text:'One row per evidence item. Keep the file in your evidence library and record its location here. Link each item to the control codes it supports (for example G1; P1) and, for per-system evidence, to the AI system IDs (for example AI-002). One item can support many controls.'}),teE.el),
+    h('div',{class:'card'},h('h2',{text:'Audit-use log'}),
+      h('p',{class:'lead',text:'Record each audit visit or request and the evidence IDs shared, so the same items can be reused for the next reviewer without asking the teams again.'}),teA.el));
+};
+
+/* ---------- reports ---------- */
+function rTable(heads,rows,opt){
+  opt=opt||{};
+  return h('table',{class:'rt'},h('thead',null,h('tr',null,heads.map(function(x){return h('th',{text:x})}))),
+    h('tbody',null,rows.length?rows.map(function(r){return h('tr',null,r.map(function(c,i){return h('td',{class:opt.mono&&opt.mono.indexOf(i)>=0?'mono':null},c)}))}):h('tr',null,h('td',{colspan:heads.length,class:'none',text:opt.empty||'None.'}))));
+}
+function rRag(l,cls){return h('span',{class:'rg '+cls,text:l})}
+function rSec(n,t){return h('h3',{class:'rs',text:n+'. '+t})}
+function rHead(title,sub){
+  var cfg=S.cfg;
+  return h('div',{class:'rh'},h('div',null,h('div',{class:'rho',text:cfg.org}),h('h2',{text:title}),h('div',{class:'rhs',text:sub})),
+    h('div',{class:'rhm'},h('div',null,h('b',{text:'As at '}),fmt(cfg.asAt)),h('div',null,h('b',{text:'Prepared by '}),cfg.user||'Not set'),h('div',null,h('b',{text:'Source '}),'AI Governance Dashboard')));
+}
+function rBasis(){
+  var R=S.cfg.rules;
+  return h('div',{class:'rb'},h('b',{text:'Basis and limits. '}),
+    'Figures are taken from the data entered in the dashboard at the as-at date and have not been independently verified. The mapping to ISO/IEC 42001 and the NIST AI RMF is indicative; this report states alignment, not certification. Evidence status: Complete means a current design item and a current operating item are recorded (for per-system controls, current operating evidence for every in-use AI system); Partial means one of these is missing; None or Expired means no current item. Rating: Green at '+R.evGreenPct+'% complete or more, Amber at '+R.evAmberPct+'% or more, otherwise Red. This is a management report, not an audit opinion.');
+}
+function rFinish(node,csv,ids){
+  var fp=sha256(headHash()+'|'+node.textContent);
+  node.append(h('div',{class:'rf'},h('div',{text:'History reference: '+headHash().slice(0,16)+(S.log.length?'':' (no recorded changes yet)')}),h('div',null,'Report fingerprint: ',h('span',{class:'mono',text:fp})),h('div',{text:'The fingerprint identifies the data state this report was produced from. It does not prove the data is correct.'})));
+  return {node:node,csv:csv||null,ids:ids||[],fp:fp};
+}
+function rTile(l,v){return h('div',{class:'t'},h('div',{class:'n',text:v}),h('div',{class:'l',text:l}))}
+function rActsLate(){return S.data.actions.filter(function(a){return a.description&&a.status!==S.cfg.rules.doneStatus&&parseD(a.due)&&dayDiff(S.cfg.asAt,a.due)>0})}
+function rDecisions(){
+  var R=S.cfg.rules,rows=[];
+  S.data.inventory.filter(function(r){return r.name&&r.approved==='Requested'}).forEach(function(r){rows.push([r.id,'Approve or reject use of "'+r.name+'"',r.owner||'–','–'])});
+  S.data.actions.filter(function(a){return a.description&&a.decision==='Yes'&&a.status!==R.doneStatus}).sort(function(a,b){return String(a.due||'9').localeCompare(String(b.due||'9'))}).forEach(function(a){rows.push([a.id,a.description,a.owner||'–',a.due?fmt(a.due):'No date'])});
+  return rows;
+}
+function repBoard(){
+  var st=stats(),rg=ragState(st),ev=evSummary(),M=S.cfg.lists.maturity,late=rActsLate().length,dec=rDecisions(),rate=evRate(ev.pct);
+  var sentence='Overall status is '+rg.level+'. '+(ev.app?'The evidence rating is '+rate.l+': '+ev.Complete+' of '+ev.app+' applicable controls ('+ev.pct+'%) have complete, current evidence. ':'No controls are recorded. ')+
+    (ev.flagged?pl(ev.flagged,'control')+' marked "'+M[M.length-2]+'" or above '+(ev.flagged===1?'has':'have')+' no current evidence. ':'')+
+    (late?pl(late,'action')+(late===1?' is':' are')+' overdue. ':'')+(dec.length?pl(dec.length,'decision')+(dec.length===1?' is':' are')+' sought.':'No decisions are sought.');
+  var n=h('div',null,rHead('AI governance: status summary','Board summary'),
+    h('div',{class:'rc'},h('div',null,rRag(rg.level,rg.cls==='crit'?'crit':rg.cls==='warn'?'warn':rg.cls==='good'?'good':'mute'),' ',h('b',{text:' Conclusion'})),h('div',{text:sentence,style:'margin-top:6px'})),
+    h('div',{class:'rk'},rTile('Controls with complete evidence',ev.app?ev.Complete+' of '+ev.app:'–'),rTile('Evidence rating',rate.l),rTile('Overdue actions',late),rTile('Decisions sought',dec.length)),
+    rSec(1,'Evidence position by area'));
+  evAreas(ev).slice(1).forEach(function(a){
+    n.append(h('h4',{text:a.name}),rTable(['Area','Controls','Complete','Partial','None or expired','Rating'],a.rows.filter(function(g){return g.id!==''}).map(function(g){return [g.label,g.app,g.Complete,g.Partial,g.Gap,g.app?rRag(g.rate.l+' '+g.pct+'%',g.rate.cls):'Not applicable']}),{empty:'No controls recorded yet.'}));
+  });
+  n.append(h('p',{class:'pcs',text:'Controls with no mapping to a framework group are not shown in that framework table.'}),rSec(2,'Main gaps'),rTable(['Code','Control','Owner','Maturity','Position'],evGaps(ev).slice(0,5).map(function(x){return [x.c.lib||x.c.id,x.c.name,x.c.owner||'–',x.c.level||'–',x.a.status+(x.flag?' (claimed without evidence)':'')+'. '+x.a.gap]}),{empty:'No gaps.'}),
+    rSec(3,'Decisions sought'),rTable(['Ref','Decision','Owner','Due'],dec,{empty:'No decisions are sought.'}),rBasis());
+  return rFinish(n,null);
+}
+function repMD(){
+  var ev=evSummary(),items=evItems(),late=rActsLate(),R=S.cfg.rules,M=S.cfg.lists.maturity;
+  var none=ev.rows.filter(function(x){return x.a.status==='None'||x.a.status==='Expired'}),part=ev.rows.filter(function(x){return x.a.status==='Partial'});
+  var due=items.filter(function(e){return !evCurrent(e)||evSoon(e)}).sort(function(a,b){return String(a.validUntil).localeCompare(String(b.validUntil))});
+  var risks=S.data.risks.filter(function(r){return r.risk&&r.status==='Open'}).sort(function(a,b){return (scoreOf(b)||0)-(scoreOf(a)||0)});
+  var sentence=pl(none.length,'control')+(none.length===1?' has':' have')+' no current evidence'+(ev.flagged?', of which '+ev.flagged+(ev.flagged===1?' is':' are')+' marked "'+M[M.length-2]+'" or above':'')+'. '+pl(part.length,'control')+(part.length===1?' is':' are')+' partly evidenced. '+pl(due.length,'evidence item')+(due.length===1?' has':' have')+' expired or '+(due.length===1?'expires':'expire')+' within '+R.evSoonDays+' days. '+pl(late.length,'action')+(late.length===1?' is':' are')+' overdue.';
+  var csvRows=none.concat(part).map(function(x){return {code:x.c.lib||x.c.id,control:x.c.name,owner:x.c.owner||'',maturity:x.c.level||'',status:x.a.status,flagged:x.flag?'Yes':'',position:x.a.gap}});
+  var n=h('div',null,rHead('AI governance: evidence gap report','Management report'),
+    h('div',{class:'rc'},h('b',{text:'Conclusion. '}),sentence),
+    rSec(1,'Controls with no current evidence'),rTable(['Code','Control','Owner','Maturity','Status','Claimed'],none.map(function(x){return [x.c.lib||x.c.id,x.c.name,x.c.owner||'–',x.c.level||'–',x.a.status,x.flag?'Yes':'']}),{empty:'None.'}),
+    rSec(2,'Controls with partial evidence'),rTable(['Code','Control','Owner','Missing'],part.map(function(x){return [x.c.lib||x.c.id,x.c.name,x.c.owner||'–',x.a.gap.replace('Missing: ','')]}),{empty:'None.'}),
+    rSec(3,'Evidence expired or expiring within '+R.evSoonDays+' days'),rTable(['ID','Item','Supports','Valid until','Owner','Status'],due.map(function(e){return [e.id,e.title||'–',e.controls||'–',fmt(e.validUntil),e.owner||'–',evItemStatus(e)]}),{empty:'None.'}),
+    rSec(4,'Overdue actions'),rTable(['ID','Action','Owner','Due','Days overdue'],late.map(function(a){return [a.id,a.description,a.owner||'–',fmt(a.due),dayDiff(S.cfg.asAt,a.due)]}),{empty:'None.'}),
+    rSec(5,'Risks with no treatment started (status Open)'),rTable(['ID','Risk','Rating','Owner'],risks.map(function(r){return [r.id,r.risk,bandOf(scoreOf(r))||'–',r.owner||'–']}),{empty:'None.'}),rBasis());
+  return rFinish(n,{rows:csvRows,cols:[['code','Code'],['control','Control'],['owner','Owner'],['maturity','Maturity'],['status','Evidence status'],['flagged','Claimed without evidence'],['position','Position']]});
+}
+function repRegister(){
+  var ev=evSummary(),rows=ev.rows.map(function(x){
+    return {id:x.c.id,code:x.c.lib||'',control:x.c.name,domain:x.c.domain||'',owner:x.c.owner||'',maturity:x.c.level||'',status:x.a.status+(x.flag?' (claimed without evidence)':''),latest:evLatest(x.c),iso:x.c.isoRefs||'',nist:x.c.nistRefs||'',reason:isNA(x.c)?(x.c.naReason||''):''};
+  });
+  var sentence=ev.total?ev.Complete+' of '+ev.app+' applicable controls have complete, current evidence; '+ev.Partial+' partial; '+(ev.None+ev.Expired)+' none or expired; '+ev.na+' not applicable.':'No controls are recorded.';
+  var n=h('div',null,rHead('AI governance: control status register','Register of controls'),
+    h('div',{class:'rc'},h('b',{text:'Conclusion. '}),sentence),
+    rSec(1,'Controls'),rTable(['ID','Code','Control','Domain','Owner','Maturity','Evidence status','Latest evidence','ISO/IEC 42001','NIST AI RMF'],rows.map(function(r){return [r.id,r.code,r.control,r.domain,r.owner||'–',r.maturity||'–',r.status+(r.reason?'. '+r.reason:''),r.latest?fmt(r.latest):'–',r.iso||'–',r.nist||'–']}),{empty:'No controls recorded yet.'}),rBasis());
+  return rFinish(n,{rows:rows,cols:[['id','ID'],['code','Code'],['control','Control'],['domain','Domain'],['owner','Owner'],['maturity','Maturity'],['status','Evidence status'],['latest','Latest evidence date'],['iso','ISO/IEC 42001 references'],['nist','NIST AI RMF references'],['reason','Not applicable reason']]});
+}
+function repPack(scope){
+  var ev=evSummary(),rows=ev.rows,audits=S.data.audits.filter(function(a){return a.audit||a.items}),label='All controls';
+  if(scope.indexOf('dom:')===0){var d=scope.slice(4);rows=rows.filter(function(x){return x.c.domain===d});label='Domain: '+d}
+  else if(scope.indexOf('au:')===0){
+    var au=S.data.audits.filter(function(a){return a.id===scope.slice(3)})[0],ids=au?splitRefs(au.items):[];
+    rows=rows.filter(function(x){return evFor(x.c).some(function(e){return ids.indexOf(String(e.id).toUpperCase())>=0})});
+    audits=au?[au]:[];label='Audit record: '+(au?au.id+(au.audit?' '+au.audit:''):scope);
+  }
+  var idSet={},csvRows=[],n,blocks=[],only=null;
+  if(scope.indexOf('au:')===0){var au2=S.data.audits.filter(function(a){return a.id===scope.slice(3)})[0];only=au2?splitRefs(au2.items):[]}
+  rows.forEach(function(x){
+    var its=evFor(x.c).filter(function(e){return !only||only.indexOf(String(e.id).toUpperCase())>=0}),sp=specOf(x.c),st=x.a.status;
+    its.forEach(function(e){idSet[e.id]=1;csvRows.push({code:x.c.lib||x.c.id,control:x.c.name,status:st,id:e.id,kind:e.kind||'',item:e.title||'',location:e.link||'',fp:e.fingerprint||'',collected:e.collected||'',valid:e.validUntil||'',istatus:evItemStatus(e)})});
+    if(!its.length)csvRows.push({code:x.c.lib||x.c.id,control:x.c.name,status:st,id:'',kind:'',item:'',location:'',fp:'',collected:'',valid:'',istatus:''});
+    blocks.push(h('div',{class:'pc'},
+      h('div',{class:'pch'},h('b',{text:(x.c.lib||x.c.id)+'  '+x.c.name}),' ',rRag(st,evStatCls(st)==='good'?'good':evStatCls(st)==='crit'?'crit':evStatCls(st)==='warn'?'warn':'mute')),
+      sp?h('div',{class:'pcs',text:'Required: design: '+sp.d+'. Operating: '+sp.o+'. Refresh: '+sp.r+'.'}):h('div',{class:'pcs',text:'Required: '+(x.c.expected||'not specified')+'.'}),
+      st==='Not applicable'?h('div',{class:'pcs',text:'Not applicable. Reason: '+(x.c.naReason||'not recorded')+'. Approved by: '+(x.c.naBy||'not recorded')+'.'}):null,
+      st==='Not applicable'?null:rTable(['ID','Kind','Item','Location','Fingerprint (SHA-256)','Collected','Valid until'],its.map(function(e){return [e.id,e.kind||'–',e.title||'–',e.link||'–',e.fingerprint||'–',e.collected?fmt(e.collected):'–',e.validUntil?fmt(e.validUntil):'No expiry']}),{mono:[4],empty:'No evidence recorded.'})));
+  });
+  var nItems=Object.keys(idSet).length,comp=rows.filter(function(x){return x.a.status==='Complete'}).length,app=rows.filter(function(x){return x.a.status!=='Not applicable'}).length;
+  var sentence='Scope: '+label+'. '+pl(rows.length,'control')+' in scope, of which '+comp+' of '+app+' applicable '+(app===1?'has':'have')+' complete, current evidence. '+pl(nItems,'evidence item')+' listed.';
+  n=h('div',null,rHead('AI governance: auditor evidence pack','Evidence index for reviewers'),h('div',{class:'rc'},h('b',{text:'Conclusion. '}),sentence),
+    rSec(1,'Evidence by control'),blocks.length?blocks:h('p',{class:'none',text:'No controls in scope.'}),
+    rSec(2,'Audit-use log'),rTable(['ID','Audit or review','Auditor','Date','Evidence shared','Shared with and how'],audits.map(function(a){return [a.id,a.audit||'–',a.auditor||'–',a.date?fmt(a.date):'–',a.items||'–',a.shared||'–']}),{empty:'No audit visits recorded.'}),
+    h('div',{class:'rb'},h('b',{text:'Note for reviewers. '}),'Files are held in the evidence library at the location shown. To confirm a file is unchanged, work out its SHA-256 fingerprint and compare it with the fingerprint listed here, or use "Check a file" on the Evidence page.'),rBasis());
+  return rFinish(n,{rows:csvRows,cols:[['code','Control code'],['control','Control'],['status','Evidence status'],['id','Evidence ID'],['kind','Kind'],['item','Item'],['location','Location'],['fp','Fingerprint (SHA-256)'],['collected','Collected'],['valid','Valid until'],['istatus','Item status']]},Object.keys(idSet));
+}
+var rptKey='board',rptScope='';
+PAGES.reports=function(root){
+  var REP={board:['Board summary',repBoard],md:['MD gap report',repMD],register:['Control status register',repRegister],pack:['Auditor evidence pack',repPack]};
+  var sel=h('select',{'aria-label':'Report'}),scope=h('select',{'aria-label':'Scope of the evidence pack'}),sheet=h('div',{class:'rpt'}),cur=null;
+  Object.keys(REP).forEach(function(k){sel.append(h('option',{value:k,text:REP[k][0]}))});sel.value=rptKey;
+  function fillScope(){
+    scope.replaceChildren(h('option',{value:'',text:'Scope: all controls'}));
+    S.cfg.lists.domains.forEach(function(d){scope.append(h('option',{value:'dom:'+d,text:'Domain: '+d}))});
+    S.data.audits.filter(function(a){return a.id&&a.items}).forEach(function(a){scope.append(h('option',{value:'au:'+a.id,text:'Audit record: '+a.id+(a.audit?' '+a.audit:'')}))});
+    if(!Array.prototype.some.call(scope.options,function(o){return o.value===rptScope}))rptScope='';
+    scope.value=rptScope;scope.style.display=rptKey==='pack'?'':'none';
+  }
+  function draw(){
+    cur=rptKey==='pack'?repPack(rptScope):REP[rptKey][1]();
+    sheet.replaceChildren(cur.node);
+    csvB.disabled=!cur.csv;logB.style.display=rptKey==='pack'?'':'none';
+  }
+  var csvB=h('button',{class:'btn',text:'Export CSV',onclick:function(){
+    var c=cur.csv;if(!c)return;
+    showText('Export '+REP[rptKey][0],toCSV(c.rows,c.cols.map(function(x){return {k:x[0],label:x[1]}})),'Copy this text into a new file and save it as .csv, or paste it straight into Excel.');
+  }});
+  var logB=h('button',{class:'btn',text:'Add to audit-use log',onclick:function(){
+    if(!cur.ids.length){info('Nothing to log','This pack lists no evidence items.');return}
+    var r=newRow('audits');r.items=cur.ids.join('; ');r.notes='Created from the auditor evidence pack ('+(scope.options[scope.selectedIndex]||{}).text+'). Add the audit name and auditor on the Evidence page.';
+    S.data.audits.push(r);logChange('audits',r.id,'Row','','Added from evidence pack');save();fillScope();
+    info('Added to the audit-use log',r.id+' was added with '+pl(cur.ids.length,'evidence item')+'. Complete the audit name, auditor and how it was shared on the Evidence page.');
+  }});
+  var prt=h('button',{class:'btn pri',text:'Print or save as PDF',onclick:function(){try{window.print()}catch(e){info('Print','Printing is not available here. Open the dashboard in a normal browser tab and try again.')}}});
+  sel.addEventListener('change',function(){rptKey=sel.value;fillScope();draw()});
+  scope.addEventListener('change',function(){rptScope=scope.value;draw()});
+  fillScope();
+  root.append(h('div',{class:'card noprint'},h('h2',{text:'Reports'}),
+    h('p',{class:'lead',text:'Each report is built from the data in this dashboard at the as-at date. Print it, or choose "Save as PDF" in the print dialog. A report fingerprint at the foot identifies the data state it came from.'}),
+    h('div',{class:'tbar'},sel,scope,prt,csvB,logB)),sheet);
+  draw();
 };
 
 /* ---------- shell ---------- */
@@ -1167,6 +1576,7 @@ function render(){
   applyTheme();drawNotices();drawRail();drawTop();
   var id=currentId(),root=$('#page');root.replaceChildren();
   document.title=(S.cfg.title||'AI Governance Dashboard');
+  document.body.classList.toggle('rptmode',id==='reports');
   try{PAGES[id](root)}catch(e){root.append(h('div',{class:'card'},h('h2',{text:'This page could not be drawn'}),h('p',{text:String(e&&e.message||e)})))}
 }
 window.addEventListener('hashchange',function(){curPage=(location.hash||'').slice(1);render();window.scrollTo(0,0)});
