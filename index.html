@@ -327,11 +327,36 @@ function sample(){
   rk('RK-004','Wrong or biased output affects a decision about a person',2,5,'Human oversight and testing','Risk lead','Open');
   rk('RK-005','The register becomes out of date',4,2,'Quarterly confirmation by department heads','Security lead','Open');
   rk('RK-006','Too few skills to assess AI risk',3,3,'Training and external support','Governance lead','Open');
-  return {v:1,cfg:c,data:data,log:[]};
+  return {v:1,cfg:c,data:data,log:[],logBase:GENESIS,seals:[]};
 }
 
 /* ---------- state and storage ---------- */
 var KEY='ai-governance-dashboard-v1',S,storageOK=true,saveT=null;
+var GENESIS=new Array(65).join('0');
+var SHA_K=[0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
+function sha256(str){
+  var m=new TextEncoder().encode(str),l=m.length,n=((l+9+63)>>6)<<6,w=new Uint8Array(n);
+  w.set(m);w[l]=0x80;
+  var dv=new DataView(w.buffer);dv.setUint32(n-8,Math.floor(l*8/4294967296));dv.setUint32(n-4,(l*8)>>>0);
+  var H=[0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19],W=new Array(64),o,i,v;
+  for(o=0;o<n;o+=64){
+    for(i=0;i<16;i++)W[i]=dv.getUint32(o+i*4);
+    for(i=16;i<64;i++){
+      var a=W[i-15],b=W[i-2];
+      W[i]=(W[i-16]+(((a>>>7)|(a<<25))^((a>>>18)|(a<<14))^(a>>>3))+W[i-7]+(((b>>>17)|(b<<15))^((b>>>19)|(b<<13))^(b>>>10)))|0;
+    }
+    v=H.slice();
+    for(i=0;i<64;i++){
+      var e=v[4],A=v[0];
+      var t1=(v[7]+(((e>>>6)|(e<<26))^((e>>>11)|(e<<21))^((e>>>25)|(e<<7)))+((e&v[5])^(~e&v[6]))+SHA_K[i]+W[i])|0;
+      var t2=((((A>>>2)|(A<<30))^((A>>>13)|(A<<19))^((A>>>22)|(A<<10)))+((A&v[1])^(A&v[2])^(v[1]&v[2])))|0;
+      v=[(t1+t2)|0,v[0],v[1],v[2],(v[3]+t1)|0,v[4],v[5],v[6]];
+    }
+    for(i=0;i<8;i++)H[i]=(H[i]+v[i])|0;
+  }
+  return H.map(function(x){return ('00000000'+(x>>>0).toString(16)).slice(-8)}).join('');
+}
+function hashEntry(prev,e){return sha256(prev+'|'+JSON.stringify([e.t,e.who,e.table,e.id,e.field,e.from,e.to]))}
 function normalise(x){
   var b=baseConfig(),c=x.cfg||{},k;
   var cfg=Object.assign({},b,c);
@@ -348,7 +373,11 @@ function normalise(x){
   cfg.frameworks.forEach(function(f){if(f.id==='iso42001'&&!f.groups.some(function(g){return g.id==='Cl.4-10'}))f.groups.push({id:'Cl.4-10',name:'Management system clauses 4 to 10'})});
   var mig={'Yes':'Approved','No':'Not requested','Not known':''};
   data.inventory.forEach(function(r){if(mig.hasOwnProperty(r.approved))r.approved=mig[r.approved]});
-  return {v:1,cfg:cfg,data:data,log:Array.isArray(x.log)?x.log:[]};
+  var log=Array.isArray(x.log)?x.log.filter(function(e){return e&&typeof e==='object'}):[];
+  var base=typeof x.logBase==='string'&&/^[0-9a-f]{64}$/.test(x.logBase)?x.logBase:GENESIS;
+  if(log.length&&!log.some(function(e){return e.h})){var pv=base;log.forEach(function(e){e.p=pv;e.h=hashEntry(pv,e);pv=e.h})}
+  var seals=Array.isArray(x.seals)?x.seals.filter(function(q){return q&&/^[0-9a-f]{64}$/.test(q.h)}):[];
+  return {v:1,cfg:cfg,data:data,log:log,logBase:base,seals:seals};
 }
 function load(){
   try{var raw=localStorage.getItem(KEY);if(raw){var p=JSON.parse(raw);if(p&&p.v===1&&p.cfg&&p.data)return normalise(p)}}catch(e){storageOK=false}
@@ -375,9 +404,23 @@ function tierOf(r){
 }
 function inUse(r){return r.status===S.cfg.rules.inUseStatus}
 function isApproved(r){return S.cfg.lists.approvedDecisions.indexOf(r.approved)>=0}
+function headHash(){return (S.log.length&&S.log[S.log.length-1].h)||S.logBase}
 function logChange(table,id,field,from,to){
-  S.log.push({t:new Date().toISOString(),who:S.cfg.user||'',table:table,id:id||'',field:field||'',from:from==null?'':String(from),to:to==null?'':String(to)});
-  if(S.log.length>1000)S.log.splice(0,S.log.length-1000);
+  var e={t:new Date().toISOString(),who:S.cfg.user||'',table:table,id:id||'',field:field||'',from:from==null?'':String(from),to:to==null?'':String(to)};
+  e.p=headHash();e.h=hashEntry(e.p,e);S.log.push(e);
+  if(S.log.length>1000){var d=S.log.splice(0,S.log.length-1000);S.logBase=d[d.length-1].h}
+}
+function verifyChain(){
+  var prev=S.logBase,bad=null,i,e;
+  for(i=0;i<S.log.length;i++){
+    e=S.log[i];
+    if(typeof e.h!=='string'||typeof e.p!=='string'){bad={i:i,why:'has no fingerprint'};break}
+    if(e.p!==prev){bad={i:i,why:'does not follow the entry before it (an entry may have been removed, added or moved)'};break}
+    if(hashEntry(prev,e)!==e.h){bad={i:i,why:'was changed after it was recorded'};break}
+    prev=e.h;
+  }
+  var lost=S.seals.filter(function(q){return q.h!==S.logBase&&!S.log.some(function(x){return x.h===q.h})});
+  return {ok:!bad,bad:bad,head:prev,n:S.log.length,lost:lost};
 }
 function scoreOf(r){var l=+r.likelihood,i=+r.impact;return l>0&&i>0?l*i:null}
 function bandOf(s){if(s==null)return '';return s>=S.cfg.rules.riskHigh?'High':s>=S.cfg.rules.riskMed?'Medium':'Low'}
@@ -918,15 +961,15 @@ PAGES.actions=function(root){
 
 function fmtT(t){var d=new Date(t);if(isNaN(d))return '';return iso(d)+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')}
 PAGES.history=function(root){
-  var TN={inventory:'AI inventory',controls:'Controls',roadmap:'Roadmap',actions:'Actions',risks:'Risks'},f={t:'',q:''},tb=h('div'),cnt=h('span',{class:'cnt'});
+  var TN={inventory:'AI inventory',controls:'Controls',roadmap:'Roadmap',actions:'Actions',risks:'Risks',history:'History'},f={t:'',q:''},tb=h('div'),cnt=h('span',{class:'cnt'});
   function filtered(){
     return S.log.slice().reverse().filter(function(e){return (!f.t||e.table===f.t)&&(!f.q||[e.id,e.field,e.from,e.to,e.who].join(' ').toLowerCase().indexOf(f.q)>=0)});
   }
   function draw(){
     var rows=filtered(),shown=rows.slice(0,500),tbody=h('tbody'),th=h('tr'),cs='padding:6px 8px;overflow-wrap:anywhere;max-width:280px';
-    ['When','Who','Table','Record','Field','From','To'].forEach(function(x){th.append(h('th',{text:x}))});
-    shown.forEach(function(e){tbody.append(h('tr',null,h('td',{class:'id',text:fmtT(e.t)}),h('td',{text:e.who||'–',style:cs}),h('td',{text:TN[e.table]||e.table,style:cs}),h('td',{text:e.id,style:cs}),h('td',{text:e.field,style:cs}),h('td',{text:e.from,style:cs}),h('td',{text:e.to,style:cs})))});
-    if(!shown.length)tbody.append(h('tr',null,h('td',{class:'empty',colspan:7,text:S.log.length?'No changes match the filters.':'No changes recorded yet. Edits to the tables on other pages appear here.'})));
+    ['When','Who','Table','Record','Field','From','To','Ref'].forEach(function(x){th.append(h('th',{text:x}))});
+    shown.forEach(function(e){tbody.append(h('tr',null,h('td',{class:'id',text:fmtT(e.t)}),h('td',{text:e.who||'–',style:cs}),h('td',{text:TN[e.table]||e.table,style:cs}),h('td',{text:e.id,style:cs}),h('td',{text:e.field,style:cs}),h('td',{text:e.from,style:cs}),h('td',{text:e.to,style:cs}),h('td',{class:'id',text:e.h?e.h.slice(0,8):'–',title:e.h||'No fingerprint'})))});
+    if(!shown.length)tbody.append(h('tr',null,h('td',{class:'empty',colspan:8,text:S.log.length?'No changes match the filters.':'No changes recorded yet. Edits to the tables on other pages appear here.'})));
     tb.replaceChildren(h('div',{class:'tw'},h('table',{class:'grid'},h('thead',null,th),tbody)));
     cnt.textContent=rows.length+' change'+(rows.length===1?'':'s')+(rows.length>500?' (latest 500 shown)':'');
   }
@@ -936,14 +979,43 @@ PAGES.history=function(root){
   var q=h('input',{type:'search',placeholder:'Search record, field or value','aria-label':'Search the change history'});
   q.addEventListener('input',function(){f.q=q.value.toLowerCase();draw()});
   var exp=h('button',{class:'btn',text:'Export CSV',onclick:function(){
-    var C=[{label:'When',k:'t'},{label:'Who',k:'who'},{label:'Table',k:'table'},{label:'Record',k:'id'},{label:'Field',k:'field'},{label:'From',k:'from'},{label:'To',k:'to'}];
+    var C=[{label:'When',k:'t'},{label:'Who',k:'who'},{label:'Table',k:'table'},{label:'Record',k:'id'},{label:'Field',k:'field'},{label:'From',k:'from'},{label:'To',k:'to'},{label:'Previous fingerprint',k:'p'},{label:'Fingerprint',k:'h'}];
     showText('Export change history',toCSV(filtered(),C),'Copy this text into a new file and save it as .csv.');
   }});
-  var clr=confirmBtn('Clear history',function(){S.log=[];save();draw()});
+  var stat=h('span',{class:'cnt',text:'Integrity not checked in this session.'});
+  function when(){return fmtT(new Date().toISOString())}
+  var ver=h('button',{class:'btn',text:'Verify chain',onclick:function(){
+    var r=verifyChain(),msg;
+    if(!r.ok){var e=S.log[r.bad.i];msg='NOT INTACT. Entry '+(r.bad.i+1)+' of '+r.n+' ('+fmtT(e.t)+', '+(e.field||'record')+') '+r.bad.why+'. Entries from this point cannot be relied on.';stat.textContent='Verified '+when()+': not intact at entry '+(r.bad.i+1)+'.'}
+    else{msg='Chain intact: '+r.n+' entr'+(r.n===1?'y':'ies')+' checked, none changed, removed or moved inside this record.';
+      if(r.lost.length)msg+='\n\nWarning: '+r.lost.length+' recorded seal'+(r.lost.length===1?'':'s')+' not found in the history kept here. This is expected if the history was cleared or trimmed after sealing. Otherwise entries may have been removed.';
+      msg+='\n\nThis shows internal consistency only. It cannot detect a history that was rebuilt from scratch. Compare against a seal you recorded outside this tool.';
+      stat.textContent='Verified '+when()+': chain intact, '+r.n+' entr'+(r.n===1?'y':'ies')+(r.lost.length?', seal warning.':'.')}
+    info(r.ok?'History check':'History check: problem found',msg);
+  }});
+  var seal=h('button',{class:'btn',text:'Seal history',onclick:function(){
+    if(!S.log.length){info('Nothing to seal','No changes have been recorded yet.');return}
+    var r=verifyChain();
+    if(!r.ok){info('Cannot seal','The chain is not intact. Run Verify chain first.');return}
+    S.seals.push({t:new Date().toISOString(),h:r.head,n:r.n,who:S.cfg.user||''});save();
+    showText('History seal','Seal code: '+r.head+'\nEntries: '+r.n+'\nSealed: '+when()+'\nBy: '+(S.cfg.user||'not set'),'Record this seal outside the tool, for example in an email, a ticket or a printed review record. Later, paste the code into Check a seal to confirm this point is still in the history.');
+  }});
+  var sealIn=h('input',{type:'text',placeholder:'Paste a recorded seal code','aria-label':'Recorded seal code',style:'min-width:260px'});
+  var chk=h('button',{class:'btn',text:'Check a seal',onclick:function(){
+    var c=sealIn.value.trim().toLowerCase(),i;
+    if(!/^[0-9a-f]{64}$/.test(c)){info('Check a seal','A seal code is 64 characters, using 0 to 9 and a to f.');return}
+    var r=verifyChain();
+    for(i=0;i<S.log.length;i++)if(S.log[i].h===c)break;
+    if(!r.ok)info('Check a seal','The chain is not intact, so a match here would not be reliable. Run Verify chain.');
+    else if(i<S.log.length)info('Check a seal','Found. This seal matches entry '+(i+1)+' of '+S.log.length+'. '+(S.log.length-i-1)+' entr'+(S.log.length-i-1===1?'y has':'ies have')+' been recorded since.');
+    else if(c===S.logBase&&c!==GENESIS)info('Check a seal','The seal marks a point before the earliest entry kept here. The history was cleared or trimmed after it. Later entries continue from that point.');
+    else info('Check a seal','Not found. Either the code is from a different history, or entries up to that point were removed or rebuilt.');
+  }});
+  var clr=confirmBtn('Clear history',function(){var hd=headHash();S.log=[];S.logBase=hd;logChange('history','','History','','Cleared');save();draw()});
   draw();
   root.append(h('div',{class:'card'},h('h2',{text:'Change history'}),
-    h('p',{class:'lead',text:'Records who changed which cell, from what to what, in this browser. Set your name in Settings so it appears here. It is a working record, not a tamper-proof audit trail: anyone with the file or browser can edit or clear it.'}),
-    h('div',{class:'filters'},ts,q),h('div',{class:'tbar'},exp,clr,h('span',{class:'sp'}),cnt),tb));
+    h('p',{class:'lead',text:'Records who changed which cell, from what to what, in this browser. Set your name in Settings so it appears here. Each entry carries a fingerprint that includes the one before it, so Verify chain shows if an entry was changed, removed or moved. This is tamper-evident, not tamper-proof: anyone with the file or browser can still edit or clear it, and a history rebuilt from scratch cannot be detected unless you have recorded a seal outside this tool.'}),
+    h('div',{class:'filters'},ts,q),h('div',{class:'tbar'},exp,ver,seal,clr,h('span',{class:'sp'}),cnt),h('div',{class:'tbar'},sealIn,chk,h('span',{class:'sp'}),stat),tb));
 };
 
 PAGES.setup=function(root){
