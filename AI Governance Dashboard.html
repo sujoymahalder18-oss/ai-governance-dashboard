@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Governance Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout: page rail on the left, one report column on the right. Audit-report restraint: one accent, serif figures, status shown as text plus colour. */
+:root{
+  --bg:#F5F6F8; --surface:#FFFFFF; --ink:#13202B; --muted:#586674; --line:#DCE1E7; --soft:#EDF0F4;
+  --accent:#0B4F6C; --accent-ink:#FFFFFF; --accent-fg:#0B4F6C;
+  --good:#1D7A4E; --warn:#A8620A; --crit:#B3261E; --neutral:#7A8794;
+  --fd:'IBM Plex Serif',Georgia,serif; --fb:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif; --fm:'IBM Plex Mono',ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E151B; --surface:#16202A; --ink:#E6EBF0; --muted:#9BA8B4; --line:#2A3743; --soft:#1D2934;
+    --accent-fg:color-mix(in srgb, var(--accent) 45%, white);
+    --good:#4CBF8A; --warn:#E0A24A; --crit:#F0877F; --neutral:#8996A3; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0E151B; --surface:#16202A; --ink:#E6EBF0; --muted:#9BA8B4; --line:#2A3743; --soft:#1D2934;
+  --accent-fg:color-mix(in srgb, var(--accent) 45%, white);
+  --good:#4CBF8A; --warn:#E0A24A; --crit:#F0877F; --neutral:#8996A3; color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:14px/1.5 var(--fb);-webkit-font-smoothing:antialiased}
+h1,h2,h3{margin:0;font-weight:600;text-wrap:balance}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent-fg);outline-offset:2px}
+.app{display:grid;grid-template-columns:236px minmax(0,1fr);min-height:100vh}
+.rail{background:var(--surface);border-right:1px solid var(--line);padding:22px 12px;position:sticky;top:0;align-self:start;max-height:100vh;overflow:auto;display:flex;flex-direction:column;gap:18px}
+.brand{display:flex;gap:10px;align-items:flex-start;padding:0 8px}
+.mark{width:10px;align-self:stretch;min-height:36px;background:var(--accent);border-radius:2px;flex:none}
+.brand b{font-family:var(--fd);font-size:16px;line-height:1.25;display:block}
+.brand span{color:var(--muted);font-size:12px}
+.nav{display:flex;flex-direction:column;gap:2px}
+.nav a{padding:8px 10px;border-radius:6px;color:var(--ink);text-decoration:none;border-left:3px solid transparent}
+.nav a:hover{background:var(--soft)}
+.nav a[aria-current="page"]{background:var(--soft);border-left-color:var(--accent);font-weight:600}
+.railnote{color:var(--muted);font-size:12px;padding:0 8px;margin-top:auto}
+.main{padding:26px clamp(16px,3vw,36px) 56px;max-width:1320px;width:100%}
+.top{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:18px}
+.eyebrow{color:var(--muted);font-size:12px;letter-spacing:.04em;text-transform:uppercase}
+.top h1{font-family:var(--fd);font-size:28px;line-height:1.2;margin-top:2px}
+.asat{color:var(--muted);font-size:13px;font-variant-numeric:tabular-nums}
+.banner{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;background:color-mix(in srgb,var(--warn) 12%,var(--surface));border:1px solid color-mix(in srgb,var(--warn) 45%,var(--line));border-radius:8px;padding:10px 14px;margin-bottom:16px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px 20px;margin-bottom:16px;min-width:0}
+.card>h2{font-size:15px;margin-bottom:12px}
+.card .lead{color:var(--muted);margin:-6px 0 12px}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.grid2>.card{margin-bottom:0}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:16px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;min-width:0}
+.kpi .l{color:var(--muted);font-size:12px}
+.kpi .n{font-family:var(--fd);font-size:34px;line-height:1.15;font-variant-numeric:tabular-nums}
+.kpi .s{color:var(--muted);font-size:12px}
+.chip{display:inline-block;padding:1px 9px;border-radius:999px;font-size:12px;font-weight:500;border:1px solid;white-space:nowrap;line-height:1.6}
+.chip.good{color:var(--good);border-color:color-mix(in srgb,var(--good) 50%,transparent);background:color-mix(in srgb,var(--good) 12%,transparent)}
+.chip.warn{color:var(--warn);border-color:color-mix(in srgb,var(--warn) 50%,transparent);background:color-mix(in srgb,var(--warn) 12%,transparent)}
+.chip.crit{color:var(--crit);border-color:color-mix(in srgb,var(--crit) 50%,transparent);background:color-mix(in srgb,var(--crit) 12%,transparent)}
+.chip.mute{color:var(--muted);border-color:var(--line);background:var(--soft)}
+.ragbig{display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap}
+.ragbig .chip{font-size:18px;padding:4px 18px;font-family:var(--fd)}
+.ragbig ul{margin:6px 0 0;padding-left:18px;color:var(--muted)}
+.ragbig p{margin:0}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:10px;font-size:12px;color:var(--muted)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.donutwrap{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+.donut{width:150px;height:150px;flex:none}
+.dnum{font-family:var(--fd);font-size:28px;fill:var(--ink)}
+.dlab{font-size:10px;fill:var(--muted)}
+.hb{display:grid;grid-template-columns:minmax(90px,170px) 1fr 34px;gap:4px 10px;align-items:center;font-size:13px}
+.hb .t{background:var(--soft);border-radius:3px;height:12px;overflow:hidden}
+.hb .t i{display:block;height:100%;background:var(--accent)}
+.hb .v{text-align:right;font-variant-numeric:tabular-nums;color:var(--muted)}
+.stack{display:flex;height:26px;border-radius:5px;overflow:hidden;border:1px solid var(--line)}
+.stack i{display:block;height:100%}
+.heat{border-collapse:separate;border-spacing:3px;width:100%;font-size:13px}
+.heat th{font-weight:500;color:var(--muted);text-align:left;padding:4px 6px;font-size:12px}
+.heat td.c{text-align:center;border-radius:4px;padding:8px 4px;font-variant-numeric:tabular-nums;min-width:56px}
+.heat td.z{color:var(--muted);background:var(--soft)}
+.rg td.c{padding:10px 4px}
+.tbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+.tbar .sp{flex:1}
+.tbar .cnt{color:var(--muted);font-size:12px}
+.btn{padding:6px 12px;border:1px solid var(--line);background:var(--surface);border-radius:6px;cursor:pointer}
+.btn:hover{border-color:var(--accent-fg)}
+.btn.pri{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.dng{color:var(--crit)}
+.btn.sm{padding:3px 9px;font-size:12px}
+.tw{overflow-x:auto;max-height:560px;border:1px solid var(--line);border-radius:8px}
+.grid{border-collapse:collapse;width:100%;font-size:13px}
+.grid th{position:sticky;top:0;background:var(--soft);text-align:left;font-weight:600;padding:8px;border-bottom:1px solid var(--line);color:var(--muted);font-size:12px;z-index:1}
+.grid td{border-bottom:1px solid var(--line);padding:2px 4px;vertical-align:middle}
+.grid tr:last-child td{border-bottom:0}
+.grid input,.grid select{width:100%;border:1px solid transparent;background:transparent;padding:6px;border-radius:4px;min-width:70px}
+.grid input:hover,.grid select:hover{border-color:var(--line)}
+.grid input:focus,.grid select:focus{outline:2px solid var(--accent-fg);outline-offset:-1px;background:var(--surface)}
+.grid .id{font-family:var(--fm);font-size:12px;color:var(--muted);padding:0 8px;white-space:nowrap}
+.grid .empty{padding:22px;text-align:center;color:var(--muted)}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.filters select,.filters input,.fld input,.fld select,.fld textarea{border:1px solid var(--line);background:var(--surface);border-radius:6px;padding:6px 8px;min-width:0}
+.gantt{min-width:760px}
+.gr{display:grid;grid-template-columns:minmax(170px,270px) 1fr;align-items:center;border-top:1px solid var(--line)}
+.gr .lb{padding:5px 10px 5px 4px;font-size:13px;min-width:0}
+.gr .lb small{display:block;color:var(--muted);font-size:11px}
+.gr.ph{background:var(--soft);font-size:12px;font-weight:600;color:var(--muted);padding:4px 6px}
+.gr.ph{display:block}
+.gt{position:relative;height:34px}
+.gt .bar{position:absolute;top:9px;height:16px;border-radius:3px;min-width:6px}
+.gt .m{position:absolute;top:0;bottom:0;width:1px;background:var(--line)}
+.gt .td{position:absolute;top:0;bottom:0;width:2px;background:var(--crit)}
+.gr.hd .gt{height:24px}
+.gr.hd .gt span{position:absolute;top:4px;font-size:11px;color:var(--muted);padding-left:4px;white-space:nowrap}
+.fld{display:grid;grid-template-columns:minmax(160px,230px) minmax(0,1fr);gap:8px 16px;align-items:center;margin-bottom:8px}
+.fld label{color:var(--muted);font-size:13px}
+.fld textarea{width:100%;font-family:var(--fm);font-size:12px;min-height:110px}
+.fld input[type=text],.fld input[type=date],.fld input[type=number],.fld select{width:100%;max-width:420px}
+.fld input[type=color]{padding:0;height:34px;width:60px}
+.rows{display:flex;flex-direction:column;gap:6px}
+.rowline{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.rowline input[type=text]{flex:1;min-width:140px}
+.note{color:var(--muted);font-size:12px;margin:0 0 10px}
+.ov{position:fixed;inset:0;background:rgba(10,18,24,.55);display:flex;align-items:center;justify-content:center;padding:16px;z-index:50}
+.modal{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px 20px;width:min(720px,100%);max-height:90vh;overflow:auto;display:flex;flex-direction:column;gap:10px}
+.modal textarea{width:100%;min-height:220px;font-family:var(--fm);font-size:12px;border:1px solid var(--line);border-radius:6px;background:var(--bg);padding:8px}
+.mact{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
+.foot{color:var(--muted);font-size:12px;margin-top:24px;border-top:1px solid var(--line);padding-top:12px}
+.dec{display:grid;gap:8px;margin:0;padding:0;list-style:none}
+.dec li{display:flex;gap:12px;align-items:baseline;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:8px}
+.dec li:last-child{border-bottom:0;padding-bottom:0}
+details summary{cursor:pointer;color:var(--accent-fg);margin-top:8px}
+details ul{color:var(--muted);margin:8px 0 0}
+@media (max-width:860px){
+  .app{grid-template-columns:minmax(0,1fr)}
+  .rail{position:static;max-height:none;flex-direction:column;gap:8px;border-right:0;border-bottom:1px solid var(--line);padding:12px}
+  .nav{flex-direction:row;overflow-x:auto}
+  .nav a{white-space:nowrap;border-left:0;border-bottom:3px solid transparent}
+  .nav a[aria-current="page"]{border-bottom-color:var(--accent)}
+  .railnote{display:none}
+  .grid2{grid-template-columns:minmax(0,1fr)}
+  .fld{grid-template-columns:minmax(0,1fr)}
+  .top h1{font-size:23px}
+}
+@media print{
+  .rail,.tbar,.banner,.filters{display:none!important}
+  .app{display:block}
+  .tw{max-height:none;overflow:visible}
+  body{background:#fff}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="rail">
+    <div class="brand"><div class="mark" aria-hidden="true"></div><div><b id="railTitle">AI Governance Dashboard</b><span>Template</span></div></div>
+    <nav class="nav" id="nav" aria-label="Pages"></nav>
+    <div class="railnote" id="railNote">Data stays in this browser. Nothing is uploaded.</div>
+  </aside>
+  <main class="main" id="main">
+    <div id="notices"></div>
+    <header class="top" id="top"></header>
+    <div id="page"></div>
+    <div class="foot">Illustrative template. It is not legal, audit or regulatory advice, and the framework mapping is indicative. Check the published standards before relying on it.</div>
+  </main>
+</div>
+<script>
+(function(){
+'use strict';
+
+/* ---------- helpers ---------- */
+var $=function(s,r){return (r||document).querySelector(s)};
+function h(tag,p){
+  var e=document.createElement(tag),k,v,i,c;
+  p=p||{};
+  for(k in p){v=p[k];if(v==null||v===false)continue;
+    if(k==='class')e.className=v;
+    else if(k==='text')e.textContent=v;
+    else if(k.slice(0,2)==='on')e.addEventListener(k.slice(2),v);
+    else e.setAttribute(k,v===true?'':v);
+  }
+  for(i=2;i<arguments.length;i++){
+    (function add(c){
+      if(c==null||c===false)return;
+      if(Array.isArray(c)){c.forEach(add);return}
+      e.append(c.nodeType?c:document.createTextNode(String(c)));
+    })(arguments[i]);
+  }
+  return e;
+}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+var MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function iso(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function parseD(s){var m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(s||'');return m?new Date(+m[1],+m[2]-1,+m[3]):null}
+function addDays(d,n){var x=new Date(d);x.setDate(x.getDate()+n);return x}
+function dayDiff(a,b){return Math.round((parseD(a)-parseD(b))/864e5)}
+function fmt(s){var d=parseD(s);return d?d.getDate()+' '+MONTHS[d.getMonth()]+' '+d.getFullYear():''}
+function rnd(){return Math.random().toString(36).slice(2,7)}
+function clone(o){return JSON.parse(JSON.stringify(o))}
+var YN=['Yes','No','Not known'];
+var TIERS=['High','Medium','Low'];
+
+var DOMAINS=["Governance and leadership", "Policy and compliance", "Risk and impact", "Inventory and approval", "Data", "Build and acquire", "Operate and monitor", "Third parties", "Transparency", "Incidents", "People and awareness", "Assurance and improvement"];
+var REF_ISO=[{"id": "A.2.2", "t": "AI policy"}, {"id": "A.2.3", "t": "Alignment with other organizational policies"}, {"id": "A.2.4", "t": "Review of the AI policy"}, {"id": "A.3.2", "t": "AI roles and responsibilities"}, {"id": "A.3.3", "t": "Reporting of concerns"}, {"id": "A.4.2", "t": "Resource documentation"}, {"id": "A.4.3", "t": "Data resources"}, {"id": "A.4.4", "t": "Tooling resources"}, {"id": "A.4.5", "t": "System and computing resources"}, {"id": "A.4.6", "t": "Human resources"}, {"id": "A.5.2", "t": "AI system impact assessment process"}, {"id": "A.5.3", "t": "Documentation of AI system impact assessments"}, {"id": "A.5.4", "t": "Assessing impacts on individuals or groups"}, {"id": "A.5.5", "t": "Assessing societal impacts of AI systems"}, {"id": "A.6.1.2", "t": "Objectives for responsible development of AI systems"}, {"id": "A.6.1.3", "t": "Processes for responsible design and development"}, {"id": "A.6.2.2", "t": "AI system requirements and specification"}, {"id": "A.6.2.3", "t": "Documentation of AI system design and development"}, {"id": "A.6.2.4", "t": "AI system verification and validation"}, {"id": "A.6.2.5", "t": "AI system deployment"}, {"id": "A.6.2.6", "t": "AI system operation and monitoring"}, {"id": "A.6.2.7", "t": "AI system technical documentation"}, {"id": "A.6.2.8", "t": "AI system recording of event logs"}, {"id": "A.7.2", "t": "Data for development and enhancement of AI systems"}, {"id": "A.7.3", "t": "Acquisition of data"}, {"id": "A.7.4", "t": "Quality of data for AI systems"}, {"id": "A.7.5", "t": "Data provenance"}, {"id": "A.7.6", "t": "Data preparation"}, {"id": "A.8.2", "t": "System documentation and information for users"}, {"id": "A.8.3", "t": "External reporting"}, {"id": "A.8.4", "t": "Communication of incidents"}, {"id": "A.8.5", "t": "Information for interested parties"}, {"id": "A.9.2", "t": "Processes for responsible use of AI systems"}, {"id": "A.9.3", "t": "Objectives for responsible use of AI systems"}, {"id": "A.9.4", "t": "Intended use of the AI system"}, {"id": "A.10.2", "t": "Allocation of responsibilities"}, {"id": "A.10.3", "t": "Suppliers"}, {"id": "A.10.4", "t": "Customers"}];
+var REF_CL=[{"id": "4.1", "t": "Understanding the organization and its context"}, {"id": "4.2", "t": "Needs and expectations of interested parties"}, {"id": "4.3", "t": "Scope of the AI management system"}, {"id": "4.4", "t": "AI management system"}, {"id": "5.1", "t": "Leadership and commitment"}, {"id": "5.2", "t": "AI policy"}, {"id": "5.3", "t": "Roles, responsibilities and authorities"}, {"id": "6.1.1", "t": "Risks and opportunities: general"}, {"id": "6.1.2", "t": "AI risk assessment"}, {"id": "6.1.3", "t": "AI risk treatment"}, {"id": "6.1.4", "t": "AI system impact assessment"}, {"id": "6.2", "t": "AI objectives and planning"}, {"id": "6.3", "t": "Planning of changes"}, {"id": "7.1", "t": "Resources"}, {"id": "7.2", "t": "Competence"}, {"id": "7.3", "t": "Awareness"}, {"id": "7.4", "t": "Communication"}, {"id": "7.5.1", "t": "Documented information: general"}, {"id": "7.5.2", "t": "Creating and updating documented information"}, {"id": "7.5.3", "t": "Control of documented information"}, {"id": "8.1", "t": "Operational planning and control"}, {"id": "8.2", "t": "AI risk assessment (operation)"}, {"id": "8.3", "t": "AI risk treatment (operation)"}, {"id": "8.4", "t": "AI system impact assessment (operation)"}, {"id": "9.1", "t": "Monitoring, measurement, analysis and evaluation"}, {"id": "9.2.1", "t": "Internal audit: general"}, {"id": "9.2.2", "t": "Internal audit programme"}, {"id": "9.3.1", "t": "Management review: general"}, {"id": "9.3.2", "t": "Management review inputs"}, {"id": "9.3.3", "t": "Management review results"}, {"id": "10.1", "t": "Continual improvement"}, {"id": "10.2", "t": "Nonconformity and corrective action"}];
+var REF_NIST=[{"id": "GOVERN 1.1", "t": "Legal and regulatory requirements understood and documented"}, {"id": "GOVERN 1.2", "t": "Trustworthy-AI characteristics built into policies"}, {"id": "GOVERN 1.3", "t": "Risk management effort scaled to risk tolerance"}, {"id": "GOVERN 1.4", "t": "Transparent risk-management policies and controls"}, {"id": "GOVERN 1.5", "t": "Ongoing monitoring and periodic review planned"}, {"id": "GOVERN 1.6", "t": "Inventory of AI systems"}, {"id": "GOVERN 1.7", "t": "Safe decommissioning and phase-out"}, {"id": "GOVERN 2.1", "t": "Risk roles, responsibilities and reporting lines"}, {"id": "GOVERN 2.2", "t": "Training on AI risk duties"}, {"id": "GOVERN 2.3", "t": "Executive responsibility for AI risk decisions"}, {"id": "GOVERN 3.1", "t": "Diverse team informs life-cycle decisions"}, {"id": "GOVERN 3.2", "t": "Roles for human-AI configurations and oversight"}, {"id": "GOVERN 4.1", "t": "Critical thinking and safety-first mindset"}, {"id": "GOVERN 4.2", "t": "Risks and impacts documented and communicated"}, {"id": "GOVERN 4.3", "t": "Testing, incident identification and information sharing"}, {"id": "GOVERN 5.1", "t": "External feedback on impacts collected and acted on"}, {"id": "GOVERN 5.2", "t": "Stakeholder feedback incorporated into design"}, {"id": "GOVERN 6.1", "t": "Third-party risks, including IP, addressed"}, {"id": "GOVERN 6.2", "t": "Contingency for third-party failures"}, {"id": "MAP 1.1", "t": "Intended purpose, context and impacts documented"}, {"id": "MAP 1.2", "t": "Diverse, interdisciplinary contributors involved"}, {"id": "MAP 1.3", "t": "Mission and AI goals understood"}, {"id": "MAP 1.4", "t": "Business value and use context defined"}, {"id": "MAP 1.5", "t": "Organisational risk tolerances set"}, {"id": "MAP 1.6", "t": "System requirements from AI actors and socio-technical factors"}, {"id": "MAP 2.1", "t": "Tasks and methods defined"}, {"id": "MAP 2.2", "t": "Knowledge limits and human use of outputs documented"}, {"id": "MAP 2.3", "t": "Scientific integrity and TEVV considerations identified"}, {"id": "MAP 3.1", "t": "Potential benefits examined"}, {"id": "MAP 3.2", "t": "Potential costs examined"}, {"id": "MAP 3.3", "t": "Targeted application scope specified"}, {"id": "MAP 3.4", "t": "Operator proficiency defined"}, {"id": "MAP 3.5", "t": "Human oversight processes defined"}, {"id": "MAP 4.1", "t": "Legal and technology risks of components mapped"}, {"id": "MAP 4.2", "t": "Internal risk controls for components identified"}, {"id": "MAP 5.1", "t": "Likelihood and magnitude of impacts assessed"}, {"id": "MAP 5.2", "t": "Ongoing engagement and impact feedback practices"}, {"id": "MEASURE 1.1", "t": "Metrics selected for significant risks"}, {"id": "MEASURE 1.2", "t": "Metrics and controls reassessed regularly"}, {"id": "MEASURE 1.3", "t": "Independent assessors and affected parties involved"}, {"id": "MEASURE 2.1", "t": "Test sets, metrics and TEVV tools documented"}, {"id": "MEASURE 2.2", "t": "Human-subject evaluations meet requirements"}, {"id": "MEASURE 2.3", "t": "Performance measured under deployment-like conditions"}, {"id": "MEASURE 2.4", "t": "Functionality and behaviour monitored in production"}, {"id": "MEASURE 2.5", "t": "Validity and reliability demonstrated"}, {"id": "MEASURE 2.6", "t": "Safety evaluated regularly"}, {"id": "MEASURE 2.7", "t": "Security and resilience evaluated"}, {"id": "MEASURE 2.8", "t": "Transparency and accountability risks examined"}, {"id": "MEASURE 2.9", "t": "Model explained and outputs interpreted"}, {"id": "MEASURE 2.10", "t": "Privacy risks examined"}, {"id": "MEASURE 2.11", "t": "Fairness and bias evaluated"}, {"id": "MEASURE 2.12", "t": "Environmental impact assessed"}, {"id": "MEASURE 2.13", "t": "TEVV metrics and processes evaluated for effectiveness"}, {"id": "MEASURE 3.1", "t": "Existing and emergent risks tracked"}, {"id": "MEASURE 3.2", "t": "Risk tracking where measurement is hard"}, {"id": "MEASURE 3.3", "t": "Feedback and appeal channels established"}, {"id": "MEASURE 4.1", "t": "Measurement connected to deployment context"}, {"id": "MEASURE 4.2", "t": "Results validated with domain experts"}, {"id": "MEASURE 4.3", "t": "Performance changes identified and documented"}, {"id": "MANAGE 1.1", "t": "Decision on whether to proceed"}, {"id": "MANAGE 1.2", "t": "Risk treatment prioritised"}, {"id": "MANAGE 1.3", "t": "Responses to high-priority risks documented"}, {"id": "MANAGE 1.4", "t": "Residual risks documented for acquirers and users"}, {"id": "MANAGE 2.1", "t": "Resources and non-AI alternatives weighed"}, {"id": "MANAGE 2.2", "t": "Value of deployed systems sustained"}, {"id": "MANAGE 2.3", "t": "Response and recovery for new risks"}, {"id": "MANAGE 2.4", "t": "Responsibility for disengaging systems assigned"}, {"id": "MANAGE 3.1", "t": "Third-party AI risks monitored"}, {"id": "MANAGE 3.2", "t": "Pre-trained models monitored"}, {"id": "MANAGE 4.1", "t": "Post-deployment monitoring and incident response"}, {"id": "MANAGE 4.2", "t": "Continual improvement built into updates"}, {"id": "MANAGE 4.3", "t": "Incidents and errors communicated and recovery tracked"}];
+var LIB=[{"code": "G1", "domain": "Governance and leadership", "title": "Mandate, scope and context", "statement": "The organisation has agreed why it governs AI, what is in scope, who is affected and which internal and external factors matter.", "evidence": "Approved mandate and scope statement; stakeholder list", "iso": ["4.1", "4.2", "4.3", "4.4", "5.1"], "nist": ["MAP 1.3"], "gIso": "Cl.4-10", "gNist": "MAP"}, {"code": "G2", "domain": "Governance and leadership", "title": "AI objectives and change planning", "statement": "Measurable AI governance objectives are set, resourced and planned, and changes to the programme are planned before they are made.", "evidence": "Objectives with owners and dates; change plan", "iso": ["6.2", "6.3"], "nist": ["MAP 1.4"], "gIso": "Cl.4-10", "gNist": "MAP"}, {"code": "G3", "domain": "Governance and leadership", "title": "Roles and responsibilities", "statement": "Roles for AI risk, use, oversight and reporting are named, written down and communicated, including shared duties with partners.", "evidence": "Role descriptions or RACI; communication record", "iso": ["5.3", "A.3.2", "A.10.2"], "nist": ["GOVERN 2.1"], "gIso": "A.3", "gNist": "GOVERN"}, {"code": "G4", "domain": "Governance and leadership", "title": "Executive accountability", "statement": "Senior leaders own AI risk decisions and show commitment through direction, resources and regular attention.", "evidence": "Committee terms; minutes showing AI risk decisions", "iso": ["5.1"], "nist": ["GOVERN 2.3"], "gIso": "Cl.4-10", "gNist": "GOVERN"}, {"code": "G5", "domain": "Governance and leadership", "title": "Diverse and independent input", "statement": "People with different skills and backgrounds, and assessors independent of the build team, inform decisions across the life cycle.", "evidence": "Review panel membership; independent review reports", "iso": [], "nist": ["GOVERN 3.1", "MAP 1.2", "MEASURE 1.3"], "gIso": "", "gNist": "GOVERN"}, {"code": "P1", "domain": "Policy and compliance", "title": "AI policy", "statement": "A policy approved by top management states the organisation's commitments, builds trustworthy-AI characteristics into practice and sets transparent risk rules.", "evidence": "Approved policy; publication and acknowledgement record", "iso": ["5.2", "A.2.2"], "nist": ["GOVERN 1.2", "GOVERN 1.4"], "gIso": "A.2", "gNist": "GOVERN"}, {"code": "P2", "domain": "Policy and compliance", "title": "Policy alignment and review", "statement": "The AI policy is checked against other policies and reviewed at planned intervals or after major change.", "evidence": "Policy review log; list of related policies", "iso": ["A.2.3", "A.2.4"], "nist": [], "gIso": "A.2", "gNist": ""}, {"code": "P3", "domain": "Policy and compliance", "title": "Legal and regulatory duties", "statement": "Legal, regulatory and contract duties that apply to AI are identified, recorded, assigned and tracked.", "evidence": "Obligation register with owners", "iso": ["4.2", "6.1.1"], "nist": ["GOVERN 1.1"], "gIso": "Cl.4-10", "gNist": "GOVERN"}, {"code": "R1", "domain": "Risk and impact", "title": "AI risk assessment", "statement": "A defined method identifies, analyses and evaluates AI risks against set criteria and is applied at planned intervals.", "evidence": "Method document; completed assessments", "iso": ["6.1.1", "6.1.2", "8.2"], "nist": [], "gIso": "Cl.4-10", "gNist": ""}, {"code": "R2", "domain": "Risk and impact", "title": "Risk tolerance and proportionate effort", "statement": "Risk tolerance is set, and the effort spent on each AI system is scaled to it.", "evidence": "Risk appetite statement; tiering rule", "iso": ["6.1.2"], "nist": ["GOVERN 1.3", "MAP 1.5"], "gIso": "Cl.4-10", "gNist": "GOVERN"}, {"code": "R3", "domain": "Risk and impact", "title": "Risk treatment and residual risk", "statement": "Risks are ranked by impact, likelihood and resources, then treated or accepted by a named owner. Residual risk is recorded and non-AI options are weighed.", "evidence": "Risk treatment plan; residual risk acceptance", "iso": ["6.1.3", "8.3"], "nist": ["MANAGE 1.2", "MANAGE 1.3", "MANAGE 1.4", "MANAGE 2.1"], "gIso": "Cl.4-10", "gNist": "MANAGE"}, {"code": "R4", "domain": "Risk and impact", "title": "Impact assessment process", "statement": "A process sets when an AI system impact assessment is needed, what it covers and how results, benefits and costs are recorded.", "evidence": "Impact assessment procedure; completed assessments", "iso": ["6.1.4", "8.4", "A.5.2", "A.5.3"], "nist": ["MAP 3.1", "MAP 3.2", "MAP 5.1"], "gIso": "A.5", "gNist": "MAP"}, {"code": "R5", "domain": "Risk and impact", "title": "Impact on people and groups", "statement": "Effects on individuals and groups are assessed, and affected people can give feedback that is acted on.", "evidence": "Impact findings; feedback records", "iso": ["A.5.4"], "nist": ["MAP 5.2", "GOVERN 5.1"], "gIso": "A.5", "gNist": "MAP"}, {"code": "R6", "domain": "Risk and impact", "title": "Societal and environmental impact", "statement": "Wider societal and environmental effects, including energy use, are assessed where relevant.", "evidence": "Societal or environmental assessment notes", "iso": ["A.5.5"], "nist": ["MEASURE 2.12"], "gIso": "A.5", "gNist": "MEASURE"}, {"code": "R7", "domain": "Risk and impact", "title": "Tracking emerging risks", "statement": "New and hard-to-measure risks are tracked over time, and risks that cannot be measured are written down.", "evidence": "Risk register updates; list of unmeasured risks", "iso": ["8.2"], "nist": ["MEASURE 3.1", "MEASURE 3.2"], "gIso": "Cl.4-10", "gNist": "MEASURE"}, {"code": "R8", "domain": "Risk and impact", "title": "Risk communication", "statement": "Risks and impacts are recorded and communicated to decision makers and wider stakeholders.", "evidence": "Risk reports; communication log", "iso": ["7.4"], "nist": ["GOVERN 4.2"], "gIso": "Cl.4-10", "gNist": "GOVERN"}, {"code": "I1", "domain": "Inventory and approval", "title": "AI inventory", "statement": "Every AI system, including free public tools and AI inside bought software, is recorded with owner, data and status, and the register is kept current.", "evidence": "Inventory register; periodic confirmation by departments", "iso": ["A.4.2", "8.1"], "nist": ["GOVERN 1.6"], "gIso": "A.4", "gNist": "GOVERN"}, {"code": "I2", "domain": "Inventory and approval", "title": "Use-case approval", "statement": "No new AI use starts until it is assessed and a named approver records a decision and any conditions.", "evidence": "Approval records with conditions", "iso": ["A.9.2", "8.1"], "nist": ["MANAGE 1.1"], "gIso": "A.9", "gNist": "MANAGE"}, {"code": "I3", "domain": "Inventory and approval", "title": "Intended purpose and scope", "statement": "The intended purpose, application scope, supported tasks and limits of each AI system are written down.", "evidence": "Purpose and scope statement per system", "iso": ["A.9.4"], "nist": ["MAP 1.1", "MAP 2.1", "MAP 3.3"], "gIso": "A.9", "gNist": "MAP"}, {"code": "I4", "domain": "Inventory and approval", "title": "Decommissioning", "statement": "AI systems can be disengaged or retired safely, and someone is assigned to do it when behaviour departs from intended use.", "evidence": "Decommissioning procedure; named owner", "iso": [], "nist": ["GOVERN 1.7", "MANAGE 2.4"], "gIso": "", "gNist": "GOVERN"}, {"code": "D1", "domain": "Data", "title": "Data resources and requirements", "statement": "Data used to build, test or run AI is identified, its sources and requirements are recorded, and acquisition follows set rules.", "evidence": "Data register; acquisition criteria", "iso": ["A.4.3", "A.7.2", "A.7.3"], "nist": [], "gIso": "A.4", "gNist": ""}, {"code": "D2", "domain": "Data", "title": "Data quality", "statement": "Data quality criteria are defined and checked, including fitness and representativeness for the intended use.", "evidence": "Data quality checks and results", "iso": ["A.7.4"], "nist": ["MAP 2.3"], "gIso": "A.7", "gNist": "MAP"}, {"code": "D3", "domain": "Data", "title": "Data provenance and preparation", "statement": "The origin and history of data and the steps used to prepare it are recorded.", "evidence": "Lineage record; preparation steps", "iso": ["A.7.5", "A.7.6"], "nist": [], "gIso": "A.7", "gNist": ""}, {"code": "D4", "domain": "Data", "title": "Privacy in AI use", "statement": "Privacy risks of AI use are examined and documented, and personal data rules are followed.", "evidence": "Privacy assessment per system", "iso": [], "nist": ["MEASURE 2.10"], "gIso": "", "gNist": "MEASURE"}, {"code": "L1", "domain": "Build and acquire", "title": "Responsible development", "statement": "Objectives and processes for responsible design and development are defined and followed.", "evidence": "Development standard; objectives", "iso": ["A.6.1.2", "A.6.1.3"], "nist": [], "gIso": "A.6", "gNist": ""}, {"code": "L2", "domain": "Build and acquire", "title": "Requirements and specification", "statement": "Requirements, including those from users and the social setting, are specified before building or buying.", "evidence": "Requirements document", "iso": ["A.6.2.2"], "nist": ["MAP 1.6"], "gIso": "A.6", "gNist": "MAP"}, {"code": "L3", "domain": "Build and acquire", "title": "Design and technical documentation", "statement": "Design choices, knowledge limits and how people should use outputs are documented.", "evidence": "Design and technical documentation", "iso": ["A.6.2.3", "A.6.2.7"], "nist": ["MAP 2.2"], "gIso": "A.6", "gNist": "MAP"}, {"code": "L4", "domain": "Build and acquire", "title": "Verification and validation", "statement": "Systems are tested against documented sets and metrics, in conditions like real use, before release. This covers validity, reliability and human-subject evaluation where used.", "evidence": "Test plan, results and sign-off", "iso": ["A.6.2.4"], "nist": ["MEASURE 2.1", "MEASURE 2.2", "MEASURE 2.3", "MEASURE 2.5"], "gIso": "A.6", "gNist": "MEASURE"}, {"code": "L5", "domain": "Build and acquire", "title": "Safety, security and resilience testing", "statement": "Safety, safe failure, security and resilience are evaluated and documented.", "evidence": "Safety and security test reports", "iso": [], "nist": ["MEASURE 2.6", "MEASURE 2.7"], "gIso": "", "gNist": "MEASURE"}, {"code": "L6", "domain": "Build and acquire", "title": "Fairness, transparency and explainability testing", "statement": "Bias, transparency, accountability and explainability are examined and the results documented.", "evidence": "Fairness and explainability test results", "iso": [], "nist": ["MEASURE 2.8", "MEASURE 2.9", "MEASURE 2.11"], "gIso": "", "gNist": "MEASURE"}, {"code": "L7", "domain": "Build and acquire", "title": "Expert and user validation", "statement": "Results are checked with domain experts and users in the setting where the system will run.", "evidence": "Consultation notes; validation sign-off", "iso": [], "nist": ["MEASURE 4.1", "MEASURE 4.2"], "gIso": "", "gNist": "MEASURE"}, {"code": "L8", "domain": "Build and acquire", "title": "Deployment and change control", "statement": "Release to production, and later changes, follow a controlled process with approval.", "evidence": "Release and change records", "iso": ["A.6.2.5"], "nist": [], "gIso": "A.6", "gNist": ""}, {"code": "L9", "domain": "Build and acquire", "title": "Event logs and records", "statement": "Event logs and records needed to trace system behaviour are kept.", "evidence": "Log configuration; retention rule", "iso": ["A.6.2.8"], "nist": [], "gIso": "A.6", "gNist": ""}, {"code": "O1", "domain": "Operate and monitor", "title": "Operation and performance monitoring", "statement": "Performance, behaviour and drift in live use are monitored, and changes seen in field data are recorded.", "evidence": "Monitoring reports", "iso": ["A.6.2.6", "9.1"], "nist": ["MEASURE 2.4", "MEASURE 4.3", "MANAGE 2.2"], "gIso": "A.6", "gNist": "MEASURE"}, {"code": "O2", "domain": "Operate and monitor", "title": "Monitoring and review plan", "statement": "Monitoring and periodic review are planned with defined roles and frequency, covering feedback, appeal and decommissioning.", "evidence": "Monitoring plan with frequency and owners", "iso": [], "nist": ["GOVERN 1.5", "MANAGE 4.1"], "gIso": "", "gNist": "GOVERN"}, {"code": "O3", "domain": "Operate and monitor", "title": "Concern and appeal channels", "statement": "People can raise concerns and appeal outcomes, and feedback that has been reviewed is used to improve systems.", "evidence": "Channel description; case log", "iso": ["A.3.3"], "nist": ["MEASURE 3.3", "GOVERN 5.2"], "gIso": "A.3", "gNist": "MEASURE"}, {"code": "O4", "domain": "Operate and monitor", "title": "Continual improvement", "statement": "Updates to systems and to the programme include measurable improvements with stakeholder input.", "evidence": "Improvement log", "iso": ["10.1"], "nist": ["MANAGE 4.2"], "gIso": "Cl.4-10", "gNist": "MANAGE"}, {"code": "O5", "domain": "Operate and monitor", "title": "Human oversight", "statement": "Where people oversee AI outputs, their role, skill and authority to override are defined.", "evidence": "Oversight procedure; operator training", "iso": ["A.9.2"], "nist": ["GOVERN 3.2", "MAP 3.4", "MAP 3.5"], "gIso": "A.9", "gNist": "GOVERN"}, {"code": "O6", "domain": "Operate and monitor", "title": "Responsible use rules", "statement": "Rules and objectives for responsible use are defined and communicated to everyone who uses AI.", "evidence": "Acceptable use rules; acknowledgement record", "iso": ["A.9.2", "A.9.3"], "nist": [], "gIso": "A.9", "gNist": ""}, {"code": "T1", "domain": "Third parties", "title": "Supplier due diligence", "statement": "AI suppliers are assessed before use for risk, rights, intellectual property and component risks, and internal controls for third-party AI are set.", "evidence": "Supplier assessment", "iso": ["A.10.3"], "nist": ["GOVERN 6.1", "MAP 4.1", "MAP 4.2"], "gIso": "A.10", "gNist": "GOVERN"}, {"code": "T2", "domain": "Third parties", "title": "Supplier monitoring and pre-trained models", "statement": "Third-party AI and pre-trained models are monitored and maintained with controls documented, and outsourced processes stay under control.", "evidence": "Supplier review log", "iso": ["A.10.3", "8.1"], "nist": ["MANAGE 3.1", "MANAGE 3.2"], "gIso": "A.10", "gNist": "MANAGE"}, {"code": "T3", "domain": "Third parties", "title": "Third-party failure planning", "statement": "Contingency plans exist for failure of high-risk third-party data or systems.", "evidence": "Contingency plan; test record", "iso": [], "nist": ["GOVERN 6.2"], "gIso": "", "gNist": "GOVERN"}, {"code": "T4", "domain": "Third parties", "title": "Customer and shared responsibilities", "statement": "What customers and users must do, and who is responsible for what, is agreed. Residual risks are passed on to acquirers and users.", "evidence": "Terms of use; responsibility matrix", "iso": ["A.10.2", "A.10.4"], "nist": ["MANAGE 1.4"], "gIso": "A.10", "gNist": "MANAGE"}, {"code": "C1", "domain": "Transparency", "title": "Information for users and affected people", "statement": "System documentation and clear information reach users and interested parties.", "evidence": "User information; disclosure notices", "iso": ["A.8.2", "A.8.5"], "nist": [], "gIso": "A.8", "gNist": ""}, {"code": "C2", "domain": "Transparency", "title": "External reporting", "statement": "Regulators and other external parties receive the reports and communications they require.", "evidence": "Reporting calendar; submissions", "iso": ["A.8.3", "7.4"], "nist": [], "gIso": "A.8", "gNist": ""}, {"code": "N1", "domain": "Incidents", "title": "Incident identification and response", "statement": "AI incidents and errors are detected, handled and recovered from, and newly found risks are responded to.", "evidence": "Incident procedure; incident log", "iso": ["10.2"], "nist": ["GOVERN 4.3", "MANAGE 2.3", "MANAGE 4.1"], "gIso": "Cl.4-10", "gNist": "GOVERN"}, {"code": "N2", "domain": "Incidents", "title": "Incident communication", "statement": "Incidents and errors are communicated to those affected, to partners and externally where required, and recovery is tracked.", "evidence": "Communication records", "iso": ["A.8.4"], "nist": ["MANAGE 4.3"], "gIso": "A.8", "gNist": "MANAGE"}, {"code": "H1", "domain": "People and awareness", "title": "Competence", "statement": "People involved with AI have the skills they need, are trained on AI risk duties and are assessed for proficiency.", "evidence": "Skills matrix; training records", "iso": ["7.2", "A.4.6"], "nist": ["GOVERN 2.2", "MAP 3.4"], "gIso": "A.4", "gNist": "GOVERN"}, {"code": "H2", "domain": "People and awareness", "title": "Awareness and culture", "statement": "Staff know the policy and their part in it, and are encouraged to question and report.", "evidence": "Awareness material; attendance record", "iso": ["7.3"], "nist": ["GOVERN 4.1"], "gIso": "Cl.4-10", "gNist": "GOVERN"}, {"code": "H3", "domain": "People and awareness", "title": "Resources", "statement": "People, tools, computing and data resources needed for governance and for AI systems are identified and provided.", "evidence": "Resource plan", "iso": ["7.1", "A.4.4", "A.4.5"], "nist": [], "gIso": "A.4", "gNist": ""}, {"code": "Q1", "domain": "Assurance and improvement", "title": "Documented information", "statement": "Required documents and records are created, controlled and kept.", "evidence": "Document control index", "iso": ["7.5.1", "7.5.2", "7.5.3"], "nist": [], "gIso": "Cl.4-10", "gNist": ""}, {"code": "Q2", "domain": "Assurance and improvement", "title": "Internal audit", "statement": "Independent internal audits of AI governance run to a programme and report to management.", "evidence": "Audit plan and reports", "iso": ["9.2.1", "9.2.2"], "nist": ["MEASURE 1.3"], "gIso": "Cl.4-10", "gNist": "MEASURE"}, {"code": "Q3", "domain": "Assurance and improvement", "title": "Management review", "statement": "Management reviews the AI governance system at planned intervals and decides actions.", "evidence": "Review minutes", "iso": ["9.3.1", "9.3.2", "9.3.3"], "nist": [], "gIso": "Cl.4-10", "gNist": ""}, {"code": "Q4", "domain": "Assurance and improvement", "title": "Corrective action", "statement": "Nonconformities are corrected, causes are found and the effectiveness of the fix is checked.", "evidence": "Corrective action log", "iso": ["10.2"], "nist": [], "gIso": "Cl.4-10", "gNist": ""}, {"code": "Q5", "domain": "Assurance and improvement", "title": "Metrics and effectiveness", "statement": "Metrics for significant risks are chosen, documented and reviewed, and the effectiveness of controls and testing processes is evaluated.", "evidence": "Metric definitions; effectiveness reviews", "iso": ["9.1", "6.2"], "nist": ["MEASURE 1.1", "MEASURE 1.2", "MEASURE 2.13"], "gIso": "Cl.4-10", "gNist": "MEASURE"}];
+
+function libRow(c,id,fws){
+  var r={id:id,lib:c.code,domain:c.domain,name:c.title,statement:c.statement,owner:'',level:'',expected:c.evidence,evidence:'',isoRefs:c.iso.join('; '),nistRefs:c.nist.join('; '),notes:''};
+  var ids=(fws||[]).map(function(f){return f.id});
+  if(ids.indexOf('iso42001')>=0)r.fw_iso42001=c.gIso;
+  if(ids.indexOf('nist')>=0)r.fw_nist=c.gNist;
+  return r;
+}
+function splitRefs(v){return String(v==null?'':v).split(/[;,]/).map(function(x){return x.trim().toUpperCase()}).filter(Boolean)}
+
+/* ---------- defaults and sample ---------- */
+function baseConfig(){
+  return {
+    org:'Your organisation', title:'AI Governance Dashboard', asAt:iso(new Date()), accent:'#0B4F6C', sample:false, user:'',
+    pages:[
+      {id:'summary',label:'Executive summary',on:true},
+      {id:'inventory',label:'AI inventory',on:true},
+      {id:'controls',label:'Controls',on:true},
+      {id:'roadmap',label:'Roadmap',on:true},
+      {id:'frameworks',label:'Frameworks',on:true},
+      {id:'actions',label:'Actions and risks',on:true},
+      {id:'history',label:'Change history',on:true},
+      {id:'setup',label:'Settings',on:true}
+    ],
+    lists:{
+      depts:['Operations','Finance','Human resources','Information technology','Risk and compliance','Customer service'],
+      aiTypes:['Public generative AI tool','AI inside business software','Vendor or SaaS AI service','AI coding tool','Internally built model','Pilot or proof of concept'],
+      dataCats:[
+        {name:'Public data only',tier:'Low'},
+        {name:'Internal data (not public)',tier:'Medium'},
+        {name:'Personal or customer data',tier:'High'},
+        {name:'Confidential data (code, credentials, finance)',tier:'High'}
+      ],
+      invStatus:['In use','Trial','Planned','Stopped'],
+      maturity:['Not started','Designed','Implemented','Evidenced'],
+      phases:['Mandate','Foundation','Discovery','Implementation','Assurance','Ordinary operation'],
+      workStatus:['Not started','In progress','Done','At risk'],
+      riskStatus:['Open','Treating','Accepted','Closed'],
+      domains:DOMAINS.slice(),
+      approval:['Not requested','Requested','Approved','Approved with conditions','Rejected'],
+      approvedDecisions:['Approved','Approved with conditions']
+    },
+    rules:{affectsPeopleHigh:true,unapprovedHighRed:true,overdueRedDays:5,riskHigh:15,riskMed:8,doneStatus:'Done',riskStatus:'At risk',inUseStatus:'In use'},
+    fields:{inventory:[],controls:[],roadmap:[],actions:[],risks:[]},
+    labels:{inventory:{},controls:{},roadmap:{},actions:{},risks:{}},
+    frameworks:[
+      {id:'iso42001',name:'ISO/IEC 42001 Annex A',groups:[
+        {id:'A.2',name:'Policies related to AI'},{id:'A.3',name:'Internal organization'},{id:'A.4',name:'Resources for AI systems'},
+        {id:'A.5',name:'Assessing impacts of AI systems'},{id:'A.6',name:'AI system life cycle'},{id:'A.7',name:'Data for AI systems'},
+        {id:'A.8',name:'Information for interested parties'},{id:'A.9',name:'Use of AI systems'},{id:'A.10',name:'Third-party and customer relationships'},
+        {id:'Cl.4-10',name:'Management system clauses 4 to 10'}]},
+      {id:'nist',name:'NIST AI RMF',groups:[
+        {id:'GOVERN',name:'Govern'},{id:'MAP',name:'Map'},{id:'MEASURE',name:'Measure'},{id:'MANAGE',name:'Manage'}]}
+    ]
+  };
+}
+function emptyData(){return {inventory:[],controls:[],roadmap:[],actions:[],risks:[]}}
+function sample(){
+  var T=new Date(),D=function(n){return iso(addDays(T,n))};
+  var c=baseConfig();c.org='Sample Organisation';c.sample=true;
+  var inv=function(id,name,use,type,dept,owner,vendor,dataCat,affects,status,approved,remarks){return {id:id,name:name,use:use,type:type,dept:dept,owner:owner,vendor:vendor,dataCat:dataCat,affects:affects,status:status,approved:approved,remarks:remarks||''}};
+  var L=c.lists,P='Public generative AI tool',B='AI inside business software',V='Vendor or SaaS AI service';
+  var data={
+    inventory:[
+      inv('AI-001','General chatbot','Drafts and summarises documents',P,'Operations','Team lead','Vendor A','Internal data (not public)','No','In use','No','Staff use personal accounts'),
+      inv('AI-002','Meeting transcription assistant','Transcribes and summarises meetings',B,'Human resources','HR manager','Vendor B','Personal or customer data','No','In use','Yes'),
+      inv('AI-003','Code completion assistant','Suggests code for developers','AI coding tool','Information technology','Head of engineering','Vendor C','Confidential data (code, credentials, finance)','No','In use','Yes'),
+      inv('AI-004','Customer service chatbot','Answers customer queries',V,'Customer service','Service head','Vendor D','Personal or customer data','Yes','Trial','No'),
+      inv('AI-005','Application scoring model','Scores applications for review','Internally built model','Risk and compliance','Risk head','Internal','Personal or customer data','Yes','In use','Yes'),
+      inv('AI-006','Document data extraction','Reads fields from scanned forms',V,'Operations','Operations head','Vendor E','Personal or customer data','No','In use','Yes'),
+      inv('AI-007','Campaign copy generator','Drafts marketing text',P,'Operations','Team lead','Vendor A','Public data only','No','In use','Not known'),
+      inv('AI-008','Spreadsheet formula assistant','Suggests formulas',B,'Finance','Finance manager','Vendor F','Internal data (not public)','No','In use','Yes'),
+      inv('AI-009','Anomaly detection pilot','Flags unusual transactions','Pilot or proof of concept','Risk and compliance','Risk analyst','Internal','Personal or customer data','Yes','Planned','No'),
+      inv('AI-010','Translation assistant','Translates internal notices',P,'Human resources','HR executive','Vendor A','Not known','Not known','In use','Not known','Data use to be confirmed'),
+      inv('AI-011','Image generator','Created slide illustrations',P,'Operations','Team lead','Vendor G','Public data only','No','Stopped','No')
+    ],
+    controls:[],roadmap:[],actions:[],risks:[]
+  };
+  var APPR={'AI-001':['Not requested'],'AI-002':['Approved','AI governance committee',-40,''],'AI-003':['Approved with conditions','AI governance committee',-35,'Enterprise licence only; no secrets in prompts'],'AI-004':['Requested'],'AI-005':['Approved','AI governance committee',-90,''],'AI-006':['Approved with conditions','AI governance committee',-60,'Mask identifiers before upload'],'AI-007':['Not requested'],'AI-008':['Approved','AI governance committee',-45,''],'AI-009':['Requested'],'AI-010':['Not requested'],'AI-011':['Rejected','AI governance committee',-20,'Output could not be checked']};
+  data.inventory.forEach(function(r){var a=APPR[r.id];r.approved=a[0];r.approver=a[1]||'';r.decided=a[2]?D(a[2]):'';r.conditions=a[3]||''});
+  var pat=[3,2,2,1,1,0,0,0,2,1,0,3,1,0,2,1],M=c.lists.maturity;
+  var OWN={'Governance and leadership':'Governance lead','Policy and compliance':'Compliance lead','Risk and impact':'Risk lead','Inventory and approval':'Governance lead','Data':'Data owner','Build and acquire':'Engineering lead','Operate and monitor':'Security lead','Third parties':'Procurement lead','Transparency':'Communications lead','Incidents':'Security lead','People and awareness':'HR lead','Assurance and improvement':'Internal audit'};
+  LIB.forEach(function(l,i){
+    var r=libRow(l,'CT-'+String(i+1).padStart(3,'0'),c.frameworks),lv=pat[i%pat.length];
+    r.level=M[lv];r.owner=OWN[l.domain]||'Governance lead';
+    if((lv===3&&i!==11)||(lv===2&&i%3===0))r.evidence='Sample reference (illustrative)';
+    data.controls.push(r);
+  });
+  var rm=function(id,phase,act,owner,s,e,st){data.roadmap.push({id:id,phase:phase,activity:act,owner:owner,start:D(s),end:D(e),status:st})};
+  rm('RM-001','Mandate','Approve the AI governance mandate','Executive sponsor',-70,-55,'Done');
+  rm('RM-002','Mandate','Appoint an accountable owner','Executive sponsor',-60,-50,'Done');
+  rm('RM-003','Foundation','Approve the AI policy','Governance lead',-50,-25,'Done');
+  rm('RM-004','Foundation','Define roles and responsibilities','Governance lead',-30,5,'In progress');
+  rm('RM-005','Discovery','Collect AI returns from departments','Department heads',-14,10,'In progress');
+  rm('RM-006','Discovery','Build the AI register','Security lead',-14,20,'In progress');
+  rm('RM-007','Implementation','Set the risk assessment method','Risk lead',10,40,'Not started');
+  rm('RM-008','Implementation','Add an approval gate to buying and building','Procurement lead',20,60,'At risk');
+  rm('RM-009','Implementation','Run staff awareness sessions','Governance lead',25,55,'Not started');
+  rm('RM-010','Assurance','Test the main controls','Security lead',60,100,'Not started');
+  rm('RM-011','Assurance','Independent review of AI governance','Internal audit',100,130,'Not started');
+  rm('RM-012','Ordinary operation','Report AI status to the Board each quarter','Governance lead',130,170,'Not started');
+  var ac=function(id,d,o,due,st,dec,n){data.actions.push({id:id,description:d,owner:o,due:D(due),status:st,decision:dec,notes:n||''})};
+  ac('AC-001','Confirm who owns the AI policy','Executive sponsor',-12,'Done','No');
+  ac('AC-002','Get returns from the remaining departments','Department heads',-2,'In progress','No','Two departments outstanding');
+  ac('AC-003','Decide whether public AI tools may be used with internal data','Management',7,'Not started','Yes');
+  ac('AC-004','Approve the risk rating rule for the AI register','Management',10,'Not started','Yes');
+  ac('AC-005','Brief the Board on AI governance status','Governance lead',14,'Not started','No');
+  ac('AC-006','Complete supplier checks for vendor AI services','Procurement lead',20,'In progress','No');
+  ac('AC-007','Test the incident process with an AI scenario','Security lead',45,'Not started','No');
+  var rk=function(id,r,l,i,t,o,st){data.risks.push({id:id,risk:r,likelihood:String(l),impact:String(i),treatment:t,owner:o,status:st})};
+  rk('RK-001','Staff paste confidential data into public AI tools',4,5,'Acceptable use rule, awareness, approved tool list','Governance lead','Treating');
+  rk('RK-002','AI tools in use that nobody has recorded',4,3,'Department returns and periodic review','Security lead','Treating');
+  rk('RK-003','Vendor changes terms or keeps our data',3,4,'Supplier checks and contract terms','Procurement lead','Open');
+  rk('RK-004','Wrong or biased output affects a decision about a person',2,5,'Human oversight and testing','Risk lead','Open');
+  rk('RK-005','The register becomes out of date',4,2,'Quarterly confirmation by department heads','Security lead','Open');
+  rk('RK-006','Too few skills to assess AI risk',3,3,'Training and external support','Governance lead','Open');
+  return {v:1,cfg:c,data:data,log:[]};
+}
+
+/* ---------- state and storage ---------- */
+var KEY='ai-governance-dashboard-v1',S,storageOK=true,saveT=null;
+function normalise(x){
+  var b=baseConfig(),c=x.cfg||{},k;
+  var cfg=Object.assign({},b,c);
+  cfg.lists=Object.assign({},b.lists,c.lists||{});
+  cfg.rules=Object.assign({},b.rules,c.rules||{});
+  cfg.fields=Object.assign({},b.fields,c.fields||{});
+  cfg.labels=Object.assign({},b.labels,c.labels||{});
+  if(!Array.isArray(cfg.frameworks))cfg.frameworks=b.frameworks;
+  if(!Array.isArray(cfg.pages)||!cfg.pages.length)cfg.pages=b.pages;
+  if(!cfg.pages.some(function(p){return p.id==='setup'}))cfg.pages.push({id:'setup',label:'Settings',on:true});
+  var data=Object.assign(emptyData(),x.data||{});
+  for(k in data)if(!Array.isArray(data[k]))data[k]=[];
+  if(!cfg.pages.some(function(p){return p.id==='history'})){var si=cfg.pages.map(function(p){return p.id}).indexOf('setup');cfg.pages.splice(si<0?cfg.pages.length:si,0,{id:'history',label:'Change history',on:true})}
+  cfg.frameworks.forEach(function(f){if(f.id==='iso42001'&&!f.groups.some(function(g){return g.id==='Cl.4-10'}))f.groups.push({id:'Cl.4-10',name:'Management system clauses 4 to 10'})});
+  var mig={'Yes':'Approved','No':'Not requested','Not known':''};
+  data.inventory.forEach(function(r){if(mig.hasOwnProperty(r.approved))r.approved=mig[r.approved]});
+  return {v:1,cfg:cfg,data:data,log:Array.isArray(x.log)?x.log:[]};
+}
+function load(){
+  try{var raw=localStorage.getItem(KEY);if(raw){var p=JSON.parse(raw);if(p&&p.v===1&&p.cfg&&p.data)return normalise(p)}}catch(e){storageOK=false}
+  return null;
+}
+function flush(){
+  if(saveT==null)return;clearTimeout(saveT);saveT=null;
+  try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){storageOK=false;drawNotices()}
+}
+function save(){clearTimeout(saveT);saveT=setTimeout(flush,250)}
+window.addEventListener('pagehide',flush);
+document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden')flush()});
+S=load()||sample();
+
+/* ---------- schema ---------- */
+function labelOf(t,k,d){var l=S.cfg.labels[t];return (l&&l[k])||d}
+function tierOf(r){
+  if(!r.name||!String(r.name).trim())return '';
+  var dc=S.cfg.lists.dataCats.filter(function(x){return x.name===r.dataCat})[0];
+  var high=(r.affects==='Yes'&&S.cfg.rules.affectsPeopleHigh)||(dc&&dc.tier==='High');
+  if(high)return 'High';
+  if(!dc||!r.affects||r.affects==='Not known')return 'To be assessed';
+  return dc.tier;
+}
+function inUse(r){return r.status===S.cfg.rules.inUseStatus}
+function isApproved(r){return S.cfg.lists.approvedDecisions.indexOf(r.approved)>=0}
+function logChange(table,id,field,from,to){
+  S.log.push({t:new Date().toISOString(),who:S.cfg.user||'',table:table,id:id||'',field:field||'',from:from==null?'':String(from),to:to==null?'':String(to)});
+  if(S.log.length>1000)S.log.splice(0,S.log.length-1000);
+}
+function scoreOf(r){var l=+r.likelihood,i=+r.impact;return l>0&&i>0?l*i:null}
+function bandOf(s){if(s==null)return '';return s>=S.cfg.rules.riskHigh?'High':s>=S.cfg.rules.riskMed?'Medium':'Low'}
+function gLabel(g){return g.id.toLowerCase()===String(g.name).toLowerCase()?g.name:g.id+' '+g.name}
+function chipCls(v){return {High:'crit',Medium:'warn',Low:'good','To be assessed':'mute'}[v]||'mute'}
+function cols(t){
+  var L=S.cfg.lists,c=[],R=S.cfg.rules;
+  function add(k,label,o){var x=Object.assign({k:k,label:labelOf(t,k,label),w:130},o||{});c.push(x)}
+  if(t==='inventory'){
+    add('id','ID',{ro:1,w:70});add('name','AI tool or system',{w:190});add('use','Used for',{w:220});
+    add('type','Type',{type:'select',opts:L.aiTypes,w:190});add('dept','Department',{type:'select',opts:L.depts,w:160});
+    add('owner','Owner',{w:140});add('vendor','Provider or vendor',{w:130});
+    add('dataCat','Data it uses',{type:'select',opts:L.dataCats.map(function(x){return x.name}).concat(['Not known']),w:210});
+    add('affects','Affects people or decisions about them?',{type:'select',opts:YN,w:140});
+    add('status','Status',{type:'select',opts:L.invStatus,w:100});
+    add('approved','Approval decision',{type:'select',opts:L.approval,w:170});add('approver','Decided by',{w:160});add('decided','Decision date',{type:'date',w:140});add('conditions','Conditions or reason',{w:220});
+    add('risk','Risk level',{calc:tierOf,cls:chipCls,w:120});
+    add('remarks','Remarks',{w:200});
+  }else if(t==='controls'){
+    add('id','ID',{ro:1,w:70});add('domain','Domain',{type:'select',opts:L.domains,w:170});add('name','Control',{w:260});
+    add('statement','What good looks like',{w:380});add('owner','Owner',{w:140});
+    add('level','Maturity',{type:'select',opts:L.maturity,w:130});
+    add('expected','Evidence expected',{w:260});add('evidence','Evidence reference (link or file location)',{w:250});
+    add('evcheck','Evidence check',{calc:function(r){
+      if(r.evidence&&String(r.evidence).trim())return 'Evidence recorded';
+      return L.maturity.length&&r.level===L.maturity[L.maturity.length-1]?'Evidence missing':'';
+    },cls:function(v){return v==='Evidence missing'?'warn':'good'},w:140});
+    add('isoRefs','ISO/IEC 42001 references',{w:200});add('nistRefs','NIST AI RMF references',{w:240});
+    S.cfg.frameworks.forEach(function(f){
+      c.push({k:'fw_'+f.id,label:f.name+' group',w:230,type:'select',fw:1,opts:f.groups.map(function(g){return {v:g.id,l:gLabel(g)}})});
+    });
+    add('notes','Notes',{w:200});
+  }else if(t==='roadmap'){
+    add('id','ID',{ro:1,w:70});add('phase','Phase',{type:'select',opts:L.phases,w:180});add('activity','Activity',{w:280});
+    add('owner','Owner',{w:150});add('start','Start',{type:'date',w:140});add('end','End',{type:'date',w:140});
+    add('status','Status',{type:'select',opts:L.workStatus,w:120});
+  }else if(t==='actions'){
+    add('id','ID',{ro:1,w:70});add('description','Action or decision',{w:300});add('owner','Owner',{w:150});
+    add('due','Due',{type:'date',w:140});add('status','Status',{type:'select',opts:L.workStatus,w:120});
+    add('decision','Decision sought?',{type:'select',opts:['Yes','No'],w:110});
+    add('timing','Timing',{calc:function(r){
+      if(!r.due||r.status===R.doneStatus||!parseD(r.due))return '';
+      var d=dayDiff(S.cfg.asAt,r.due);return d>0?'Overdue '+d+' day'+(d>1?'s':''):(d===0?'Due today':'');
+    },cls:function(v){var m=/(\d+)/.exec(v);return v.indexOf('Overdue')===0?(m&&+m[1]>R.overdueRedDays?'crit':'warn'):'mute'},w:120});
+    add('notes','Notes',{w:200});
+  }else if(t==='risks'){
+    var sc=['1','2','3','4','5'];
+    add('id','ID',{ro:1,w:70});add('risk','Risk',{w:280});
+    add('likelihood','Likelihood (1-5)',{type:'select',opts:sc,w:110});add('impact','Impact (1-5)',{type:'select',opts:sc,w:100});
+    add('score','Score',{calc:function(r){var s=scoreOf(r);return s==null?'':String(s)},w:70});
+    add('band','Rating',{calc:function(r){return bandOf(scoreOf(r))},cls:chipCls,w:100});
+    add('treatment','Treatment',{w:260});add('owner','Owner',{w:150});
+    add('status','Status',{type:'select',opts:L.riskStatus,w:110});
+  }
+  (S.cfg.fields[t]||[]).forEach(function(f){c.push({k:f.k,label:labelOf(t,f.k,f.label),w:150,custom:1})});
+  return c;
+}
+var PREFIX={inventory:'AI-',controls:'CT-',roadmap:'RM-',actions:'AC-',risks:'RK-'};
+function nextId(t){
+  var m=0;S.data[t].forEach(function(r){var n=parseInt(String(r.id||'').replace(/\D/g,''),10);if(n>m)m=n});
+  return PREFIX[t]+String(m+1).padStart(3,'0');
+}
+function newRow(t){
+  var L=S.cfg.lists,r={id:nextId(t)};
+  if(t==='inventory'){r.status=L.invStatus[0];r.affects='Not known';r.approved=L.approval[0];r.dataCat='Not known'}
+  if(t==='controls')r.level=L.maturity[0];
+  if(t==='roadmap'){r.phase=L.phases[0];r.status=L.workStatus[0]}
+  if(t==='actions'){r.status=L.workStatus[0];r.decision='No'}
+  if(t==='risks'){r.likelihood='3';r.impact='3';r.status=L.riskStatus[0]}
+  return r;
+}
+
+/* ---------- calculations ---------- */
+function stats(){
+  var cfg=S.cfg,R=cfg.rules,M=cfg.lists.maturity.length;
+  var I=S.data.inventory.filter(function(r){return r.name&&String(r.name).trim()});
+  var tiers={'High':0,'Medium':0,'Low':0,'To be assessed':0};
+  I.forEach(function(r){tiers[tierOf(r)]++});
+  var unappHigh=I.filter(function(r){return tierOf(r)==='High'&&inUse(r)&&!isApproved(r)}).length;
+  var C=S.data.controls.filter(function(r){return r.name&&String(r.name).trim()});
+  var lv=C.map(function(r){var i=cfg.lists.maturity.indexOf(r.level);return i<0?0:i});
+  var final=lv.filter(function(i){return i===M-1}).length;
+  var evMissing=C.filter(function(r){return M>0&&r.level===cfg.lists.maturity[M-1]&&!(r.evidence&&String(r.evidence).trim())}).length;
+  var ready=C.length&&M>1?Math.round(lv.reduce(function(a,b){return a+b/(M-1)},0)/C.length*100):null;
+  var openA=S.data.actions.filter(function(a){return a.description&&a.status!==R.doneStatus});
+  var late=openA.filter(function(a){return parseD(a.due)&&dayDiff(cfg.asAt,a.due)>0}).map(function(a){return dayDiff(cfg.asAt,a.due)});
+  var rmRisk=S.data.roadmap.filter(function(a){return a.activity&&a.status===R.riskStatus}).length;
+  var acRisk=openA.filter(function(a){return a.status===R.riskStatus}).length;
+  return {I:I,tiers:tiers,unappHigh:unappHigh,C:C,lv:lv,final:final,evMissing:evMissing,ready:ready,openA:openA,late:late,rmRisk:rmRisk,acRisk:acRisk};
+}
+function ragState(st){
+  var R=S.cfg.rules,red=[],amb=[];
+  var any=st.I.length||st.C.length||S.data.actions.length||S.data.roadmap.length;
+  if(!any)return {level:'No data',cls:'mute',reasons:['Nothing has been entered yet.']};
+  if(R.unapprovedHighRed&&st.unappHigh)red.push(st.unappHigh+' high-risk AI system'+(st.unappHigh>1?'s are':' is')+' in use without approval.');
+  var lateRed=st.late.filter(function(d){return d>R.overdueRedDays}).length;
+  if(lateRed)red.push(lateRed+' action'+(lateRed>1?'s are':' is')+' more than '+R.overdueRedDays+' days overdue.');
+  var lateAmb=st.late.length-lateRed;
+  if(lateAmb)amb.push(lateAmb+' action'+(lateAmb>1?'s are':' is')+' overdue by '+R.overdueRedDays+' days or less.');
+  if(st.rmRisk+st.acRisk)amb.push((st.rmRisk+st.acRisk)+' item'+((st.rmRisk+st.acRisk)>1?'s are':' is')+' marked "'+R.riskStatus+'".');
+  if(st.tiers['To be assessed'])amb.push(st.tiers['To be assessed']+' AI system'+(st.tiers['To be assessed']>1?'s need':' needs')+' a data or impact answer before it can be rated.');
+  if(st.evMissing)amb.push(st.evMissing+' control'+(st.evMissing>1?'s':'')+' marked "'+S.cfg.lists.maturity[S.cfg.lists.maturity.length-1]+'" '+(st.evMissing>1?'have':'has')+' no evidence reference.');
+  if(red.length)return {level:'Red',cls:'crit',reasons:red.concat(amb)};
+  if(amb.length)return {level:'Amber',cls:'warn',reasons:amb};
+  return {level:'Green',cls:'good',reasons:['No overdue actions, items at risk or unrated systems.']};
+}
+
+/* ---------- csv ---------- */
+function csvCell(v){v=String(v==null?'':v);return /[",\n\t\r]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v}
+function toCSV(rows,C){
+  return [C.map(function(c){return csvCell(c.label)}).join(',')].concat(rows.map(function(r){
+    return C.map(function(c){return csvCell(c.calc?c.calc(r):r[c.k])}).join(',');
+  })).join('\n');
+}
+function parseTable(text){
+  text=String(text).replace(/^﻿/,'');
+  var first=text.split(/\r?\n/)[0]||'',d=first.indexOf('\t')>=0?'\t':',';
+  var out=[],row=[],cur='',q=false,i,ch;
+  for(i=0;i<text.length;i++){ch=text[i];
+    if(q){if(ch==='"'){if(text[i+1]==='"'){cur+='"';i++}else q=false}else cur+=ch}
+    else if(ch==='"'&&cur==='')q=true;
+    else if(ch===d){row.push(cur);cur=''}
+    else if(ch==='\n'||ch==='\r'){if(ch==='\r'&&text[i+1]==='\n')i++;row.push(cur);out.push(row);row=[];cur=''}
+    else cur+=ch;
+  }
+  if(cur!==''||row.length){row.push(cur);out.push(row)}
+  return out.filter(function(r){return r.some(function(x){return String(x).trim()!==''})});
+}
+function normDate(v){
+  v=String(v||'').trim();if(!v)return {v:''};
+  if(parseD(v))return {v:v};
+  var m=/^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{4})$/.exec(v);
+  if(m){var d=new Date(+m[3],+m[2]-1,+m[1]);if(d.getMonth()===+m[2]-1)return {v:iso(d)}}
+  var t=Date.parse(v+' 12:00');if(!isNaN(t))return {v:iso(new Date(t))};
+  return {v:'',bad:1};
+}
+
+/* ---------- ui primitives ---------- */
+function modal(title,body,actions){
+  var ov=h('div',{class:'ov',onclick:function(e){if(e.target===ov)close()}});
+  var box=h('div',{class:'modal',role:'dialog','aria-modal':'true','aria-label':title},h('h3',{text:title}),body,h('div',{class:'mact'},actions));
+  ov.append(box);document.body.append(ov);
+  function close(){ov.remove()}
+  var f=box.querySelector('textarea,input,button');if(f)f.focus();
+  return close;
+}
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){var o=document.querySelectorAll('.ov');if(o.length)o[o.length-1].remove()}});
+function copyText(text,btn){
+  function done(ok){var o=btn.textContent;btn.textContent=ok?'Copied':'Select the text and copy it';setTimeout(function(){btn.textContent=o},1800)}
+  try{navigator.clipboard.writeText(text).then(function(){done(true)},function(){done(false)})}catch(e){done(false)}
+}
+function showText(title,text,note){
+  var ta=h('textarea',{readonly:true,'aria-label':title});ta.value=text;
+  var cp=h('button',{class:'btn pri',text:'Copy'});
+  var close=modal(title,h('div',null,note?h('p',{class:'note',text:note}):null,ta),[cp,h('button',{class:'btn',text:'Close',onclick:function(){close()}})]);
+  cp.addEventListener('click',function(){copyText(text,cp)});
+  ta.addEventListener('focus',function(){ta.select()});
+}
+function info(title,msg){
+  var close=modal(title,h('p',{text:msg}),[h('button',{class:'btn pri',text:'Close',onclick:function(){close()}})]);
+}
+function confirmBtn(label,fn,cls){
+  var b=h('button',{class:'btn '+(cls||'dng'),text:label}),t=null;
+  b.addEventListener('click',function(){
+    if(t){clearTimeout(t);t=null;b.textContent=label;fn();return}
+    b.textContent='Click again to confirm';t=setTimeout(function(){t=null;b.textContent=label},4000);
+  });
+  return b;
+}
+function chip(v,cls){return h('span',{class:'chip '+cls,text:v})}
+
+/* ---------- editable table ---------- */
+function tableEditor(t,opt){
+  opt=opt||{};
+  var rows=S.data[t],el=h('div'),tw=h('div',{class:'tw'}),cnt=h('span',{class:'cnt'}),pinned=new Set();
+  function commit(){save();if(opt.onChange)opt.onChange()}
+  function visible(){return rows.filter(function(r){return pinned.has(r)||!opt.filter||opt.filter(r)})}
+  function updCalc(tr,r){tr._calc.forEach(function(x){
+    var v=x.c.calc(r);x.sp.textContent=v;x.sp.className=v?('chip '+(x.c.cls?x.c.cls(v):'mute')):'';
+  })}
+  function cell(c,r,tr){
+    var td=h('td');
+    if(c.calc){var sp=h('span');tr._calc.push({c:c,sp:sp});td.append(sp);return td}
+    if(c.ro){td.className='id';td.textContent=r[c.k]||'';return td}
+    var inp,aria=c.label+' for '+(r.id||'row');
+    if(c.type==='select'){
+      inp=h('select',{'aria-label':aria});
+      var opts=c.opts.map(function(o){return typeof o==='string'?{v:o,l:o}:o});
+      opts=[{v:'',l:''}].concat(opts);
+      var cur=r[c.k]==null?'':String(r[c.k]);
+      if(cur!==''&&!opts.some(function(o){return o.v===cur}))opts.push({v:cur,l:cur});
+      opts.forEach(function(o){inp.append(h('option',{value:o.v,text:o.l}))});
+      inp.value=cur;
+    }else{
+      inp=h('input',{type:c.type==='date'?'date':'text','aria-label':aria});
+      inp.value=r[c.k]==null?'':r[c.k];
+    }
+    inp.addEventListener('change',function(){var old=r[c.k];r[c.k]=inp.value;if(String(old==null?'':old)!==inp.value)logChange(t,r.id,c.label,old,inp.value);tr._calc.length&&updCalc(tr,r);commit()});
+    td.append(inp);return td;
+  }
+  function draw(){
+    var C=cols(t),vis=visible(),tb=h('tbody'),th=h('tr');
+    C.forEach(function(c){th.append(h('th',{text:c.label,style:'min-width:'+c.w+'px'}))});
+    th.append(h('th',{text:'',style:'min-width:86px'}));
+    vis.forEach(function(r){
+      var tr=h('tr');tr._calc=[];
+      C.forEach(function(c){tr.append(cell(c,r,tr))});
+      tr._calc.length&&updCalc(tr,r);
+      var del=h('button',{class:'btn sm dng',text:'Delete','aria-label':'Delete '+(r.id||'row')}),tm=null;
+      del.addEventListener('click',function(){
+        if(tm){logChange(t,r.id,'Row',r.name||r.activity||r.description||r.risk||'','Deleted');rows.splice(rows.indexOf(r),1);pinned.delete(r);commit();draw();return}
+        del.textContent='Sure?';tm=setTimeout(function(){tm=null;del.textContent='Delete'},3000);
+      });
+      tr.append(h('td',null,del));tb.append(tr);
+    });
+    if(!vis.length)tb.append(h('tr',null,h('td',{class:'empty',colspan:C.length+1,text:rows.length?'No rows match the filters.':'No rows yet. Add a row, or import a CSV or pasted Excel cells.'})));
+    tw.replaceChildren(h('table',{class:'grid'},h('thead',null,th),tb));
+    cnt.textContent=vis.length===rows.length?rows.length+' row'+(rows.length===1?'':'s'):vis.length+' of '+rows.length+' rows';
+  }
+  function addRow(){
+    var r=newRow(t);rows.push(r);pinned.add(r);logChange(t,r.id,'Row','','Added');commit();draw();
+    var trs=tw.querySelectorAll('tbody tr'),last=trs[trs.length-1],f=last&&last.querySelector('input,select');
+    if(f){f.focus();last.scrollIntoView({block:'nearest'})}
+  }
+  function doImport(){
+    var ta=h('textarea',{placeholder:'Paste cells copied from Excel, or CSV text. The first row must hold column headings.','aria-label':'Pasted data'});
+    var file=h('input',{type:'file',accept:'.csv,.tsv,.txt','aria-label':'Choose a CSV file'});
+    var mode=h('select',{'aria-label':'Import mode'},h('option',{value:'append',text:'Add to existing rows'}),h('option',{value:'replace',text:'Replace existing rows'}));
+    var msg=h('p',{class:'note'});
+    file.addEventListener('change',function(){
+      var f=file.files[0];if(!f)return;var rd=new FileReader();
+      rd.onload=function(){ta.value=String(rd.result)};rd.readAsText(f);
+    });
+    var go=h('button',{class:'btn pri',text:'Import'});
+    var close=modal('Import into '+({inventory:'the AI inventory',controls:'controls',roadmap:'the roadmap',actions:'actions',risks:'risks'})[t],
+      h('div',{class:'rows'},h('p',{class:'note',text:'Column headings are matched to the headings in the table. Unknown columns are ignored. Dates read as YYYY-MM-DD or DD/MM/YYYY.'}),file,ta,mode,msg),
+      [go,h('button',{class:'btn',text:'Cancel',onclick:function(){close()}})]);
+    go.addEventListener('click',function(){
+      var tbl=parseTable(ta.value);
+      if(tbl.length<2){msg.textContent='Add a heading row and at least one data row.';return}
+      var C=cols(t).filter(function(c){return !c.calc});
+      var norm=function(s){return String(s).trim().toLowerCase()};
+      var map=tbl[0].map(function(hd){return C.filter(function(c){return norm(c.label)===norm(hd)||norm(c.k)===norm(hd)})[0]||null});
+      if(!map.some(Boolean)){msg.textContent='No heading matches this table. Use the headings shown in the table.';return}
+      var ignored=tbl[0].filter(function(_,i){return !map[i]}).length,bad=0,fresh=[];
+      tbl.slice(1).forEach(function(line){
+        var r={};
+        map.forEach(function(c,i){
+          if(!c)return;var v=(line[i]==null?'':String(line[i])).trim();
+          if(c.type==='date'){var nd=normDate(v);if(nd.bad)bad++;v=nd.v}
+          if(c.fw){var g=c.opts.filter(function(o){return o.v.toLowerCase()===v.toLowerCase()||o.l.toLowerCase()===v.toLowerCase()})[0];v=g?g.v:v}
+          if(c.k==='approved'){var lw=v.toLowerCase();v=lw==='yes'?'Approved':lw==='no'?'Not requested':lw==='not known'?'':v}
+          r[c.k]=v;
+        });
+        fresh.push(r);
+      });
+      if(mode.value==='replace')rows.length=0;
+      fresh.forEach(function(r){if(!r.id)r.id=nextId(t);rows.push(r)});
+      logChange(t,'','Import','',fresh.length+' rows ('+(mode.value==='replace'?'replaced':'added')+')');
+      commit();draw();close();
+      info('Import complete',fresh.length+' row'+(fresh.length===1?'':'s')+' imported.'+(ignored?' '+ignored+' column'+(ignored>1?'s':'')+' ignored.':'')+(bad?' '+bad+' date'+(bad>1?'s':'')+' could not be read and were left blank.':''));
+    });
+  }
+  var exp=h('button',{class:'btn',text:'Export CSV',onclick:function(){showText('Export CSV',toCSV(rows,cols(t)),'Copy this text into a new file and save it as .csv, or paste it straight into Excel.')}});
+  el.append(h('div',{class:'tbar'},h('button',{class:'btn pri',text:'Add row',onclick:addRow}),h('button',{class:'btn',text:'Import',onclick:doImport}),exp,opt.buttons||null,h('span',{class:'sp'}),cnt),tw);
+  draw();
+  return {el:el,redraw:function(clear){if(clear)pinned.clear();draw()}};
+}
+
+/* ---------- charts ---------- */
+function donut(parts,centre,unit){
+  var tot=parts.reduce(function(a,p){return a+p.value},0),R=52,C=2*Math.PI*R,off=0;
+  var s='<svg viewBox="0 0 140 140" class="donut" role="img" aria-label="'+esc(parts.map(function(p){return p.label+' '+p.value}).join(', '))+'">';
+  s+='<circle cx="70" cy="70" r="'+R+'" fill="none" style="stroke:var(--soft)" stroke-width="20"/>';
+  if(tot>0)parts.forEach(function(p){
+    if(!p.value)return;var len=p.value/tot*C;
+    s+='<circle cx="70" cy="70" r="'+R+'" fill="none" style="stroke:'+p.color+'" stroke-width="20" stroke-dasharray="'+len+' '+(C-len)+'" stroke-dashoffset="'+(-off)+'" transform="rotate(-90 70 70)"/>';off+=len;
+  });
+  s+='<text x="70" y="70" text-anchor="middle" class="dnum">'+esc(centre)+'</text><text x="70" y="88" text-anchor="middle" class="dlab">'+esc(unit)+'</text></svg>';
+  return s;
+}
+function legend(parts){return h('div',{class:'legend'},parts.map(function(p){return h('span',null,h('i',{style:'background:'+p.color}),p.label+' '+p.value)}))}
+function hbars(items){
+  var mx=Math.max.apply(null,items.map(function(i){return i.value}).concat([1]));
+  var g=h('div',{class:'hb'});
+  items.forEach(function(i){
+    g.append(h('div',{text:i.label}),h('div',{class:'t'},h('i',{style:'width:'+(i.value/mx*100)+'%'})),h('div',{class:'v',text:i.value}));
+  });
+  return g;
+}
+function mixAcc(p){return 'color-mix(in srgb, var(--accent) '+p+'%, var(--surface))'}
+
+/* ---------- pages ---------- */
+var PAGES={};
+function emptyNote(msg){return h('p',{class:'note',text:msg})}
+
+PAGES.summary=function(root){
+  var st=stats(),rg=ragState(st),cfg=S.cfg,M=cfg.lists.maturity;
+  var n=st.I.length,inuse=st.I.filter(inUse).length;
+  root.append(h('div',{class:'card'},h('div',{class:'ragbig'},chip(rg.level,rg.cls),
+    h('div',null,
+      h('p',{text:n?(n+' AI system'+(n===1?' is':'s are')+' recorded and '+inuse+' '+(inuse===1?'is':'are')+' in use. '+st.tiers.High+' '+(st.tiers.High===1?'is':'are')+' rated high risk.'):'No AI systems are recorded yet.'}),
+      h('ul',null,rg.reasons.map(function(x){return h('li',{text:x})})),
+      h('details',null,h('summary',{text:'How the status is worked out'}),h('ul',null,
+        h('li',{text:'Red: a high-risk system in use without approval'+(cfg.rules.unapprovedHighRed?'':' (switched off)')+', or an action more than '+cfg.rules.overdueRedDays+' days overdue.'}),
+        h('li',{text:'Amber: an overdue action, an item marked "'+cfg.rules.riskStatus+'", or an AI system that cannot yet be rated.'}),
+        h('li',{text:'Green: none of the above.'}),
+        h('li',{text:'Risk level: high if the system affects people (when this rule is on) or uses a data category rated high. Otherwise the data category sets it. Unknown answers give "To be assessed".'}),
+        h('li',{text:'These rules can be changed in Settings.'}))))
+  )));
+  var tile=function(l,v,s){return h('div',{class:'kpi'},h('div',{class:'l',text:l}),h('div',{class:'n',text:v}),h('div',{class:'s',text:s}))};
+  root.append(h('div',{class:'kpis'},
+    tile('AI systems recorded',n,inuse+' in use'),
+    tile('High-risk systems',st.tiers.High,st.unappHigh+' in use without approval'),
+    tile('Control readiness',st.ready==null?'–':st.ready+'%','Average progress along the maturity ladder'),
+    tile('Controls fully evidenced',st.C.length?st.final+' of '+st.C.length:'–',st.final?(st.evMissing?st.evMissing+' without an evidence reference':'All have an evidence reference'):'At the "'+M[M.length-1]+'" level'),
+    tile('Open actions',st.openA.length,st.late.length+' overdue')
+  ));
+  var tiers=[{label:'High',value:st.tiers.High,color:'var(--crit)'},{label:'Medium',value:st.tiers.Medium,color:'var(--warn)'},{label:'Low',value:st.tiers.Low,color:'var(--good)'},{label:'To be assessed',value:st.tiers['To be assessed'],color:'var(--neutral)'}];
+  var d1=h('div',{class:'donutwrap'});d1.innerHTML=donut(tiers,String(n),'systems');
+  var c1=h('div',{class:'card'},h('h2',{text:'AI systems by risk level'}),d1);d1.append(legend(tiers));
+  var cnt=M.map(function(_,i){return st.lv.filter(function(x){return x===i}).length});
+  var segs=M.map(function(m,i){return {label:m,value:cnt[i],color:mixAcc(M.length>1?15+75*i/(M.length-1):60)}});
+  var stack=h('div',{class:'stack',role:'img','aria-label':segs.map(function(s){return s.label+' '+s.value}).join(', ')});
+  segs.forEach(function(s){if(s.value)stack.append(h('i',{style:'width:'+(s.value/st.C.length*100)+'%;background:'+s.color,title:s.label+': '+s.value}))});
+  var c2=h('div',{class:'card'},h('h2',{text:'Controls by maturity'}),st.C.length?[stack,legend(segs)]:emptyNote('No controls recorded yet.'));
+  root.append(h('div',{class:'grid2'},c1,c2));
+  var byDept={};st.I.forEach(function(r){var k=r.dept||'Not stated';byDept[k]=(byDept[k]||0)+1});
+  var dep=Object.keys(byDept).map(function(k){return {label:k,value:byDept[k]}}).sort(function(a,b){return b.value-a.value}).slice(0,8);
+  var ph=cfg.lists.phases.slice();S.data.roadmap.forEach(function(r){if(r.phase&&ph.indexOf(r.phase)<0)ph.push(r.phase)});
+  var phWrap=h('div',{class:'hb'});
+  ph.forEach(function(p){
+    var rs=S.data.roadmap.filter(function(r){return r.activity&&r.phase===p});if(!rs.length)return;
+    var dn=rs.filter(function(r){return r.status===cfg.rules.doneStatus}).length;
+    phWrap.append(h('div',{text:p}),h('div',{class:'t'},h('i',{style:'width:'+(dn/rs.length*100)+'%'})),h('div',{class:'v',text:dn+'/'+rs.length}));
+  });
+  root.append(h('div',{class:'grid2',style:'margin-top:16px'},
+    h('div',{class:'card'},h('h2',{text:'AI systems by department'}),dep.length?hbars(dep):emptyNote('No AI systems recorded yet.')),
+    h('div',{class:'card'},h('h2',{text:'Roadmap activities completed, by phase'}),phWrap.children.length?phWrap:emptyNote('No roadmap activities yet.'))));
+  var dec=S.data.actions.filter(function(a){return a.description&&a.decision==='Yes'&&a.status!==cfg.rules.doneStatus}).sort(function(a,b){return String(a.due||'9').localeCompare(String(b.due||'9'))});
+  var reqs=S.data.inventory.filter(function(r){return r.name&&r.approved==='Requested'});
+  var items=reqs.map(function(r){
+    return h('li',null,h('span',{text:r.id,style:'font-family:var(--fm);font-size:12px;color:var(--muted)'}),h('span',{text:'Approve or reject use of "'+r.name+'"'+(r.dept?' ('+r.dept+')':''),style:'flex:1;min-width:200px'}),h('span',{class:'asat',text:r.owner?'Requested by '+r.owner:'Approval request'}),chip(tierOf(r),chipCls(tierOf(r))));
+  }).concat(dec.map(function(a){
+    var late=parseD(a.due)&&dayDiff(cfg.asAt,a.due)>0;
+    return h('li',null,h('span',{text:a.id,style:'font-family:var(--fm);font-size:12px;color:var(--muted)'}),h('span',{text:a.description,style:'flex:1;min-width:200px'}),h('span',{class:'asat',text:(a.owner?a.owner+' · ':'')+(a.due?'due '+fmt(a.due):'no date')}),late?chip('Overdue','crit'):null);
+  }));
+  root.append(h('div',{class:'card',style:'margin-top:16px'},h('h2',{text:'Decisions sought'}),
+    items.length?h('ul',{class:'dec'},items):emptyNote('No open decisions. Mark an action "Decision sought? Yes", or set an AI system to "Requested", and it appears here.')));
+};
+
+PAGES.inventory=function(root){
+  var f={dept:'',type:'',risk:'',appr:'',q:''},vis=h('div'),te;
+  function drawV(){
+    var st=stats();
+    var tiers=[{label:'High',value:st.tiers.High,color:'var(--crit)'},{label:'Medium',value:st.tiers.Medium,color:'var(--warn)'},{label:'Low',value:st.tiers.Low,color:'var(--good)'},{label:'To be assessed',value:st.tiers['To be assessed'],color:'var(--neutral)'}];
+    var d=h('div',{class:'donutwrap'});d.innerHTML=donut(tiers,String(st.I.length),'systems');d.append(legend(tiers));
+    var by={};st.I.forEach(function(r){var k=r.type||'Not stated';by[k]=(by[k]||0)+1});
+    var items=Object.keys(by).map(function(k){return {label:k,value:by[k]}}).sort(function(a,b){return b.value-a.value});
+    vis.replaceChildren(h('div',{class:'grid2',style:'margin-bottom:16px'},
+      h('div',{class:'card'},h('h2',{text:'By risk level'}),d),
+      h('div',{class:'card'},h('h2',{text:'By type'}),items.length?hbars(items):emptyNote('No AI systems recorded yet.'))));
+  }
+  function sel(label,key,opts){
+    var s=h('select',{'aria-label':label},h('option',{value:'',text:label+': all'}));
+    opts.forEach(function(o){s.append(h('option',{value:o,text:o}))});
+    s.addEventListener('change',function(){f[key]=s.value;te.redraw(true)});return s;
+  }
+  var L=S.cfg.lists;
+  var q=h('input',{type:'search',placeholder:'Search name, use or owner','aria-label':'Search the inventory'});
+  q.addEventListener('input',function(){f.q=q.value.toLowerCase();te.redraw(true)});
+  te=tableEditor('inventory',{onChange:drawV,filter:function(r){
+    if(f.dept&&r.dept!==f.dept)return false;if(f.type&&r.type!==f.type)return false;if(f.appr&&r.approved!==f.appr)return false;if(f.risk&&tierOf(r)!==f.risk)return false;
+    if(f.q&&[r.name,r.use,r.owner,r.vendor].join(' ').toLowerCase().indexOf(f.q)<0)return false;return true}});
+  drawV();
+  root.append(vis,h('div',{class:'card'},h('h2',{text:'Register'}),
+    h('p',{class:'lead',text:'Edit any cell. The risk level is calculated from the data category and whether people are affected.'}),
+    h('div',{class:'filters'},sel('Department','dept',L.depts),sel('Type','type',L.aiTypes),sel('Risk level','risk',['High','Medium','Low','To be assessed']),sel('Approval','appr',L.approval),q),te.el));
+};
+
+function loadLibrary(){
+  var have={},n=0;
+  S.data.controls.forEach(function(r){if(r.lib)have[r.lib]=1});
+  LIB.forEach(function(l){
+    if(have[l.code])return;
+    var r=libRow(l,nextId('controls'),S.cfg.frameworks);r.level=S.cfg.lists.maturity[0];S.data.controls.push(r);n++;
+  });
+  if(n)logChange('controls','','Library','','Loaded '+n+' controls');
+  save();return n;
+}
+var ctlFw=null;
+PAGES.controls=function(root){
+  var fws=S.cfg.frameworks;
+  if(!fws.some(function(f){return f.id===ctlFw}))ctlFw=fws.length?fws[0].id:null;
+  var vis=h('div'),grp='',dom='',te;
+  var fsel=h('select',{'aria-label':'Framework'});
+  fws.forEach(function(f){fsel.append(h('option',{value:f.id,text:f.name}))});fsel.value=ctlFw||'';
+  var gsel=h('select',{'aria-label':'Group filter'});
+  var dsel=h('select',{'aria-label':'Domain filter'},h('option',{value:'',text:'Domain: all'}));
+  S.cfg.lists.domains.forEach(function(d){dsel.append(h('option',{value:d,text:d}))});
+  function fillG(){
+    gsel.replaceChildren(h('option',{value:'',text:'Group: all'}),h('option',{value:'__none',text:'Group: not mapped'}));
+    var f=fws.filter(function(x){return x.id===ctlFw})[0];
+    if(f)f.groups.forEach(function(g){gsel.append(h('option',{value:g.id,text:gLabel(g)}))});
+    grp='';gsel.value='';
+  }
+  function drawV(){
+    var f=fws.filter(function(x){return x.id===ctlFw})[0],M=S.cfg.lists.maturity;
+    if(!f){vis.replaceChildren(emptyNote('Add a framework on the Frameworks page.'));return}
+    var C=S.data.controls.filter(function(r){return r.name&&String(r.name).trim()});
+    var tbl=h('table',{class:'heat'}),hd=h('tr',null,h('th',{text:f.name}));
+    M.forEach(function(m){hd.append(h('th',{text:m,style:'text-align:center'}))});hd.append(h('th',{text:'Total',style:'text-align:center'}));
+    tbl.append(h('thead',null,hd));var tb=h('tbody');
+    var rowsG=f.groups.map(function(g){return {id:g.id,label:gLabel(g),rs:C.filter(function(r){return r['fw_'+f.id]===g.id})}});
+    rowsG.push({id:'',label:'Not mapped',rs:C.filter(function(r){return !f.groups.some(function(g){return g.id===r['fw_'+f.id]})})});
+    rowsG.forEach(function(g){
+      if(g.id===''&&!g.rs.length)return;
+      var tr=h('tr',null,h('th',{text:g.label,style:'color:var(--ink);font-weight:400'}));
+      M.forEach(function(m,i){
+        var n=g.rs.filter(function(r){var k=M.indexOf(r.level);return (k<0?0:k)===i}).length;
+        tr.append(h('td',{class:'c'+(n?'':' z'),text:n||'·',style:n?'background:'+mixAcc(Math.min(85,18+n*14))+';color:'+(n>=4?'var(--accent-ink)':'var(--ink)'):null}));
+      });
+      tr.append(h('td',{class:'c',text:g.rs.length,style:'color:var(--muted)'}));tb.append(tr);
+    });
+    tbl.append(tb);
+    vis.replaceChildren(h('div',{class:'card'},h('h2',{text:'Controls by group and maturity'}),h('p',{class:'lead',text:'Each cell counts controls whose primary group is shown. Groups with no control are gaps; see the Frameworks page.'}),h('div',{class:'tw',style:'max-height:none;border:0'},tbl)));
+  }
+  fsel.addEventListener('change',function(){ctlFw=fsel.value;fillG();drawV();te.redraw(true)});
+  gsel.addEventListener('change',function(){grp=gsel.value;te.redraw(true)});
+  dsel.addEventListener('change',function(){dom=dsel.value;te.redraw(true)});
+  fillG();
+  var lib=confirmBtn('Load control library',function(){loadLibrary();render()},'pri');
+  te=tableEditor('controls',{onChange:drawV,buttons:lib,filter:function(r){
+    if(dom&&r.domain!==dom)return false;
+    if(!grp)return true;var f=fws.filter(function(x){return x.id===ctlFw})[0];if(!f)return true;
+    var v=r['fw_'+f.id];return grp==='__none'?!f.groups.some(function(g){return g.id===v}):v===grp}});
+  drawV();
+  root.append(h('div',{class:'card'},h('h2',{text:'Starter control library'}),
+    h('p',{class:'lead',text:LIB.length+' controls merge the overlapping requirements of ISO/IEC 42001 and the NIST AI RMF into one list, so the same requirement is never listed twice. Together they cover '+REF_ISO.length+' Annex A controls, '+REF_CL.length+' management system clause references and '+REF_NIST.length+' NIST subcategories. Each control states what good looks like in plain words and lists the references it covers. Statements are summaries in our own words and the mapping is indicative; check the standards for the exact requirements. Use "Load control library" below to add them to your register; running it again adds only the missing ones.'})),
+    vis,h('div',{class:'card'},h('h2',{text:'Control register'}),
+    h('div',{class:'filters'},fsel,gsel,dsel),te.el));
+};
+
+PAGES.roadmap=function(root){
+  var vis=h('div');
+  function drawV(){
+    var R=S.cfg.rules,L=S.cfg.lists;
+    var rs=S.data.roadmap.filter(function(r){return r.activity&&parseD(r.start)&&parseD(r.end)&&r.end>=r.start});
+    if(!rs.length){vis.replaceChildren(h('div',{class:'card'},h('h2',{text:'Timeline'}),emptyNote('Add activities with a start and end date to see the timeline.')));return}
+    var min=rs.reduce(function(a,r){return r.start<a?r.start:a},rs[0].start),max=rs.reduce(function(a,r){return r.end>a?r.end:a},rs[0].end);
+    var a=S.cfg.asAt;if(parseD(a)){if(a<min)min=a;if(a>max)max=a}
+    var total=dayDiff(max,min)+1,pos=function(d){return dayDiff(d,min)/total*100};
+    var phases=L.phases.slice();rs.forEach(function(r){if(phases.indexOf(r.phase)<0)phases.push(r.phase)});
+    var colour=function(st){return st===R.doneStatus?'var(--good)':st===R.riskStatus?'var(--crit)':st===L.workStatus[1]?'var(--accent)':'var(--neutral)'};
+    var ticks=[],d=parseD(min);d=new Date(d.getFullYear(),d.getMonth()+(d.getDate()>1?1:0),1);
+    while(iso(d)<=max){ticks.push(iso(d));d=new Date(d.getFullYear(),d.getMonth()+1,1)}
+    var markers=function(){return ticks.map(function(x){return h('div',{class:'m',style:'left:'+pos(x)+'%'})}).concat(parseD(a)?[h('div',{class:'td',style:'left:'+pos(a)+'%',title:'As at '+fmt(a)})]:[])};
+    var g=h('div',{class:'gantt'});
+    var hd=h('div',{class:'gr hd'},h('div',{class:'lb',text:'Activity'}),h('div',{class:'gt'},ticks.map(function(x){var dd=parseD(x);return h('span',{style:'left:'+pos(x)+'%',text:MONTHS[dd.getMonth()]+' '+String(dd.getFullYear()).slice(2)})})));
+    g.append(hd);
+    phases.forEach(function(p){
+      var pr=rs.filter(function(r){return r.phase===p}).sort(function(x,y){return x.start.localeCompare(y.start)});if(!pr.length)return;
+      g.append(h('div',{class:'gr ph',text:p}));
+      pr.forEach(function(r){
+        var w=Math.max((dayDiff(r.end,r.start)+1)/total*100,0.8);
+        g.append(h('div',{class:'gr'},h('div',{class:'lb'},r.activity,h('small',{text:(r.owner?r.owner+' · ':'')+r.status})),
+          h('div',{class:'gt'},markers(),h('div',{class:'bar',style:'left:'+pos(r.start)+'%;width:'+w+'%;background:'+colour(r.status),title:r.activity+': '+fmt(r.start)+' to '+fmt(r.end)+' ('+r.status+')'}))));
+      });
+    });
+    var lg=[{label:R.doneStatus,color:'var(--good)'},{label:L.workStatus[1],color:'var(--accent)'},{label:R.riskStatus,color:'var(--crit)'},{label:'Other statuses',color:'var(--neutral)'}];
+    vis.replaceChildren(h('div',{class:'card'},h('h2',{text:'Timeline'}),h('div',{class:'tw',style:'max-height:none'},g),
+      h('div',{class:'legend'},lg.map(function(x){return h('span',null,h('i',{style:'background:'+x.color}),x.label)}),h('span',null,h('i',{style:'background:var(--crit);width:3px'}),'As at '+fmt(a)))));
+  }
+  var te=tableEditor('roadmap',{onChange:drawV});drawV();
+  root.append(vis,h('div',{class:'card'},h('h2',{text:'Activities'}),te.el));
+};
+
+PAGES.frameworks=function(root){
+  var again=function(){render()};
+  root.append(h('p',{class:'note',text:'Group names follow public summaries of ISO/IEC 42001:2023 and the NIST AI RMF 1.0. They are indicative. Rename, add or remove groups, or add your own frameworks, such as local regulation or a sector standard. Groups are used for the heat map on the Controls page.'}));
+  (function(){
+    var iso={},nist={};
+    S.data.controls.forEach(function(r){splitRefs(r.isoRefs).forEach(function(x){iso[x]=1});splitRefs(r.nistRefs).forEach(function(x){nist[x]=1})});
+    var sets=[['ISO/IEC 42001 Annex A controls',REF_ISO,iso],['ISO/IEC 42001 clauses 4 to 10',REF_CL,iso],['NIST AI RMF subcategories',REF_NIST,nist]];
+    var kids=sets.map(function(z){
+      var miss=z[1].filter(function(x){return !z[2][x.id.toUpperCase()]}),done=z[1].length-miss.length;
+      return h('div',{style:'margin-bottom:12px'},
+        h('div',{class:'hb',style:'grid-template-columns:minmax(190px,300px) 1fr 80px'},h('div',{text:z[0]}),h('div',{class:'t'},h('i',{style:'width:'+(done/z[1].length*100)+'%'})),h('div',{class:'v',text:done+' of '+z[1].length})),
+        miss.length?h('details',null,h('summary',{text:miss.length+' not yet covered by any control'}),h('ul',null,miss.map(function(x){return h('li',{text:x.id+'  '+x.t})}))):h('p',{class:'note',text:'Every item has at least one control.'}));
+    });
+    root.append(h('div',{class:'card'},h('h2',{text:'Reference coverage'}),h('p',{class:'lead',text:'How many items from the published frameworks have at least one control in your register. It reads the reference columns on the Controls page.'}),kids));
+  })();
+  S.cfg.frameworks.forEach(function(f){
+    var key='fw_'+f.id;
+    var name=h('input',{type:'text','aria-label':'Framework name'});name.value=f.name;
+    name.addEventListener('change',function(){f.name=name.value||f.name;save()});
+    var tb=h('tbody');
+    f.groups.forEach(function(g){
+      var n=S.data.controls.filter(function(r){return r[key]===g.id}).length;
+      var gi=h('input',{type:'text','aria-label':'Group reference'}),gn=h('input',{type:'text','aria-label':'Group name'});gi.value=g.id;gn.value=g.name;
+      gi.addEventListener('change',function(){
+        var nv=gi.value.trim();
+        if(!nv||f.groups.some(function(x){return x!==g&&x.id===nv})){gi.value=g.id;return}
+        S.data.controls.forEach(function(r){if(r[key]===g.id)r[key]=nv});g.id=nv;save();again();
+      });
+      gn.addEventListener('change',function(){g.name=gn.value;save()});
+      var del=confirmBtn('Delete',function(){S.data.controls.forEach(function(r){if(r[key]===g.id)r[key]=''});f.groups.splice(f.groups.indexOf(g),1);save();again()});del.classList.add('sm');
+      tb.append(h('tr',null,h('td',null,gi),h('td',null,gn),h('td',{class:'id',text:n}),h('td',null,n?chip('Covered','good'):chip('No control mapped','warn')),h('td',null,del)));
+    });
+    var addG=h('button',{class:'btn',text:'Add group',onclick:function(){var k=1;while(f.groups.some(function(x){return x.id==='G'+k}))k++;f.groups.push({id:'G'+k,name:'New group'});save();again()}});
+    var rm=confirmBtn('Remove framework',function(){S.data.controls.forEach(function(r){delete r[key]});S.cfg.frameworks.splice(S.cfg.frameworks.indexOf(f),1);save();again()});
+    root.append(h('div',{class:'card'},h('div',{class:'rowline',style:'margin-bottom:10px'},name,addG,rm),
+      h('div',{class:'tw',style:'max-height:none'},h('table',{class:'grid'},h('thead',null,h('tr',null,h('th',{text:'Reference',style:'min-width:90px'}),h('th',{text:'Group',style:'min-width:240px'}),h('th',{text:'Controls mapped'}),h('th',{text:'Coverage'}),h('th',{text:''}))),tb))));
+  });
+  root.append(h('button',{class:'btn pri',text:'Add framework',onclick:function(){S.cfg.frameworks.push({id:'fw'+rnd(),name:'New framework',groups:[{id:'G1',name:'New group'}]});save();again()}}));
+};
+
+PAGES.actions=function(root){
+  var vis=h('div');
+  function drawV(){
+    var g=[1,2,3,4,5],tbl=h('table',{class:'heat rg'}),R=S.cfg.rules;
+    var hd=h('tr',null,h('th',{text:'Impact ↓ Likelihood →'}));g.forEach(function(l){hd.append(h('th',{text:l,style:'text-align:center'}))});tbl.append(h('thead',null,hd));
+    var tb=h('tbody');
+    g.slice().reverse().forEach(function(im){
+      var tr=h('tr',null,h('th',{text:im}));
+      g.forEach(function(l){
+        var n=S.data.risks.filter(function(r){return r.risk&&+r.likelihood===l&&+r.impact===im}).length,b=bandOf(l*im);
+        var c={High:'var(--crit)',Medium:'var(--warn)',Low:'var(--good)'}[b];
+        tr.append(h('td',{class:'c',text:n||'·',style:'background:color-mix(in srgb,'+c+' '+(n?30:10)+'%,var(--surface));font-weight:'+(n?600:400)+';color:var(--ink)',title:b+' ('+l*im+')'}));
+      });tb.append(tr);
+    });
+    tbl.append(tb);
+    vis.replaceChildren(h('div',{class:'card'},h('h2',{text:'Risk grid'}),h('p',{class:'lead',text:'Counts of risks by impact and likelihood. High from '+R.riskHigh+', medium from '+R.riskMed+'. Thresholds can be changed in Settings.'}),h('div',{class:'tw',style:'max-height:none;border:0;max-width:520px'},tbl)));
+  }
+  var ta=tableEditor('actions',{}),tr=tableEditor('risks',{onChange:drawV});drawV();
+  root.append(h('div',{class:'card'},h('h2',{text:'Actions and decisions'}),ta.el),vis,h('div',{class:'card'},h('h2',{text:'Risk register'}),tr.el));
+};
+
+function fmtT(t){var d=new Date(t);if(isNaN(d))return '';return iso(d)+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')}
+PAGES.history=function(root){
+  var TN={inventory:'AI inventory',controls:'Controls',roadmap:'Roadmap',actions:'Actions',risks:'Risks'},f={t:'',q:''},tb=h('div'),cnt=h('span',{class:'cnt'});
+  function filtered(){
+    return S.log.slice().reverse().filter(function(e){return (!f.t||e.table===f.t)&&(!f.q||[e.id,e.field,e.from,e.to,e.who].join(' ').toLowerCase().indexOf(f.q)>=0)});
+  }
+  function draw(){
+    var rows=filtered(),shown=rows.slice(0,500),tbody=h('tbody'),th=h('tr'),cs='padding:6px 8px;overflow-wrap:anywhere;max-width:280px';
+    ['When','Who','Table','Record','Field','From','To'].forEach(function(x){th.append(h('th',{text:x}))});
+    shown.forEach(function(e){tbody.append(h('tr',null,h('td',{class:'id',text:fmtT(e.t)}),h('td',{text:e.who||'–',style:cs}),h('td',{text:TN[e.table]||e.table,style:cs}),h('td',{text:e.id,style:cs}),h('td',{text:e.field,style:cs}),h('td',{text:e.from,style:cs}),h('td',{text:e.to,style:cs})))});
+    if(!shown.length)tbody.append(h('tr',null,h('td',{class:'empty',colspan:7,text:S.log.length?'No changes match the filters.':'No changes recorded yet. Edits to the tables on other pages appear here.'})));
+    tb.replaceChildren(h('div',{class:'tw'},h('table',{class:'grid'},h('thead',null,th),tbody)));
+    cnt.textContent=rows.length+' change'+(rows.length===1?'':'s')+(rows.length>500?' (latest 500 shown)':'');
+  }
+  var ts=h('select',{'aria-label':'Table'},h('option',{value:'',text:'Table: all'}));
+  Object.keys(TN).forEach(function(k){ts.append(h('option',{value:k,text:TN[k]}))});
+  ts.addEventListener('change',function(){f.t=ts.value;draw()});
+  var q=h('input',{type:'search',placeholder:'Search record, field or value','aria-label':'Search the change history'});
+  q.addEventListener('input',function(){f.q=q.value.toLowerCase();draw()});
+  var exp=h('button',{class:'btn',text:'Export CSV',onclick:function(){
+    var C=[{label:'When',k:'t'},{label:'Who',k:'who'},{label:'Table',k:'table'},{label:'Record',k:'id'},{label:'Field',k:'field'},{label:'From',k:'from'},{label:'To',k:'to'}];
+    showText('Export change history',toCSV(filtered(),C),'Copy this text into a new file and save it as .csv.');
+  }});
+  var clr=confirmBtn('Clear history',function(){S.log=[];save();draw()});
+  draw();
+  root.append(h('div',{class:'card'},h('h2',{text:'Change history'}),
+    h('p',{class:'lead',text:'Records who changed which cell, from what to what, in this browser. Set your name in Settings so it appears here. It is a working record, not a tamper-proof audit trail: anyone with the file or browser can edit or clear it.'}),
+    h('div',{class:'filters'},ts,q),h('div',{class:'tbar'},exp,clr,h('span',{class:'sp'}),cnt),tb));
+};
+
+PAGES.setup=function(root){
+  var cfg=S.cfg,again=function(){render()};
+  function card(title,note,kids){return h('div',{class:'card'},h('h2',{text:title}),note?h('p',{class:'lead',text:note}):null,kids)}
+  function fld(label,input,id){input.id=id;return h('div',{class:'fld'},h('label',{for:id,text:label}),input)}
+  function txt(obj,k,type,after){
+    var i=h('input',{type:type||'text'});i.value=obj[k]==null?'':obj[k];
+    i.addEventListener('change',function(){obj[k]=type==='number'?+i.value:i.value;save();if(after)after()});return i;
+  }
+  var quick=function(){drawRail();drawTop();document.title=cfg.title||'AI Governance Dashboard'};
+  var accent=h('input',{type:'color'});accent.value=/^#[0-9a-f]{6}$/i.test(cfg.accent)?cfg.accent:'#0B4F6C';
+  accent.addEventListener('input',function(){cfg.accent=accent.value;applyTheme()});
+  accent.addEventListener('change',function(){save()});
+  root.append(card('Organisation',null,[
+    fld('Organisation name',txt(cfg,'org','text',quick),'s-org'),
+    fld('Dashboard title',txt(cfg,'title','text',quick),'s-title'),
+    fld('As-at date',txt(cfg,'asAt','date',quick),'s-asat'),
+    fld('Your name (recorded in the change history)',txt(cfg,'user','text'),'s-user'),
+    fld('Accent colour',accent,'s-accent')]));
+  // pages
+  var pr=h('div',{class:'rows'});
+  cfg.pages.forEach(function(p,i){
+    var l=h('input',{type:'text','aria-label':'Page name'});l.value=p.label;l.addEventListener('change',function(){p.label=l.value||p.label;save();drawRail()});
+    var on=h('input',{type:'checkbox','aria-label':'Show '+p.label});on.checked=p.on;on.disabled=p.id==='setup';
+    on.addEventListener('change',function(){p.on=on.checked;save();drawRail()});
+    var mv=function(d){var j=i+d;if(j<0||j>=cfg.pages.length)return;var x=cfg.pages.splice(i,1)[0];cfg.pages.splice(j,0,x);save();again()};
+    pr.append(h('div',{class:'rowline'},l,h('label',null,on,' Show'),h('button',{class:'btn sm',text:'Up','aria-label':'Move '+p.label+' up',onclick:function(){mv(-1)}}),h('button',{class:'btn sm',text:'Down','aria-label':'Move '+p.label+' down',onclick:function(){mv(1)}})));
+  });
+  root.append(card('Pages','Rename, hide or reorder the pages. Settings always stays.',pr));
+  // lists
+  var listDefs=[['depts','Departments or business units'],['aiTypes','AI types'],['invStatus','Inventory statuses'],['phases','Roadmap phases'],['workStatus','Activity and action statuses'],['maturity','Control maturity ladder (lowest first, fully evidenced last)'],['riskStatus','Risk statuses'],['domains','Control domains'],['approval','Approval decisions for AI use'],['approvedDecisions','Approval decisions that count as approved']];
+  var lb=h('div');
+  function listBox(k,label){
+    var ta=h('textarea',{'aria-label':label});ta.value=cfg.lists[k].join('\n');
+    ta.addEventListener('change',function(){
+      var v=ta.value.split('\n').map(function(x){return x.trim()}).filter(Boolean);
+      if(k==='maturity'&&v.length<2){ta.value=cfg.lists[k].join('\n');return}
+      if(!v.length){ta.value=cfg.lists[k].join('\n');return}
+      cfg.lists[k]=v;save();
+    });
+    return fld(label,ta,'l-'+k);
+  }
+  listDefs.forEach(function(d){lb.append(listBox(d[0],d[1]))});
+  var dc=h('textarea',{'aria-label':'Data categories'});dc.value=cfg.lists.dataCats.map(function(x){return x.name+' | '+x.tier}).join('\n');
+  dc.addEventListener('change',function(){
+    var v=dc.value.split('\n').map(function(x){return x.trim()}).filter(Boolean).map(function(x){
+      var p=x.split('|'),t=(p[1]||'').trim();t=TIERS.filter(function(z){return z.toLowerCase()===t.toLowerCase()})[0]||'Medium';return {name:p[0].trim(),tier:t};
+    });
+    if(!v.length){dc.value=cfg.lists.dataCats.map(function(x){return x.name+' | '+x.tier}).join('\n');return}
+    cfg.lists.dataCats=v;save();
+  });
+  lb.append(fld('Data categories and risk tier (name | High, Medium or Low)',dc,'l-dc'));
+  root.append(card('Lists','One entry per line. Renaming an entry does not change rows that already use the old name; those rows keep their value until you edit them.',lb));
+  // rules
+  var R=cfg.rules,rb=h('div');
+  function chk(label,k){var c=h('input',{type:'checkbox'});c.checked=!!R[k];c.addEventListener('change',function(){R[k]=c.checked;save()});return fld(label,c,'r-'+k)}
+  function sl(label,k,opts){var s=h('select');opts.forEach(function(o){s.append(h('option',{value:o,text:o}))});s.value=R[k];if(s.value!==R[k]&&opts.length){s.value=opts[0]}s.addEventListener('change',function(){R[k]=s.value;save()});return fld(label,s,'r-'+k)}
+  rb.append(
+    chk('Rate a system high risk when it affects people or decisions about them','affectsPeopleHigh'),
+    chk('Red status when a high-risk system is in use without approval','unapprovedHighRed'),
+    fld('Red status when an action is overdue by more than (days)',txt(R,'overdueRedDays','number'),'r-od'),
+    fld('Risk score for High (likelihood × impact, from)',txt(R,'riskHigh','number'),'r-rh'),
+    fld('Risk score for Medium (from)',txt(R,'riskMed','number'),'r-rm'),
+    sl('Status that means an action or activity is done','doneStatus',cfg.lists.workStatus),
+    sl('Status that means an item is at risk','riskStatus',cfg.lists.workStatus),
+    sl('Inventory status that means a system is in use','inUseStatus',cfg.lists.invStatus));
+  root.append(card('Rules','These drive the risk level, the overall status and the risk grid.',rb));
+  // fields
+  var fb=h('div');
+  [['inventory','AI inventory'],['controls','Controls'],['roadmap','Roadmap'],['actions','Actions'],['risks','Risks']].forEach(function(tt){
+    var t=tt[0],box=h('div',{class:'rows',style:'margin-bottom:16px'},h('b',{text:tt[1]}));
+    cols(t).forEach(function(c){
+      if(c.fw){box.append(h('div',{class:'rowline'},h('span',{text:c.label+' (set on the Frameworks page)',style:'color:var(--muted)'})));return}
+      var i=h('input',{type:'text','aria-label':'Heading for '+c.k});i.value=c.label;
+      i.addEventListener('change',function(){
+        if(c.custom){var f=cfg.fields[t].filter(function(x){return x.k===c.k})[0];if(f)f.label=i.value||f.label;cfg.labels[t][c.k]=undefined}
+        else cfg.labels[t][c.k]=i.value||undefined;
+        save();
+      });
+      var row=h('div',{class:'rowline'},i);
+      if(c.custom)row.append(confirmBtn('Remove',function(){cfg.fields[t]=cfg.fields[t].filter(function(x){return x.k!==c.k});S.data[t].forEach(function(r){delete r[c.k]});save();again()}));
+      box.append(row);
+    });
+    var ni=h('input',{type:'text',placeholder:'New field name','aria-label':'New field name for '+tt[1]});
+    box.append(h('div',{class:'rowline'},ni,h('button',{class:'btn',text:'Add field',onclick:function(){var v=ni.value.trim();if(!v)return;cfg.fields[t].push({k:'x_'+rnd(),label:v});save();again()}})));
+    fb.append(box);
+  });
+  root.append(card('Table columns','Rename any column heading, or add your own text fields. Added fields appear in the table, in exports and in imports.',fb));
+  // data
+  var db=h('div',{class:'rowline'});
+  db.append(h('button',{class:'btn pri',text:'Export all (JSON)',onclick:function(){showText('Export all data and settings',JSON.stringify(S,null,1),'Copy this text and keep it as a backup, or send it to a colleague. Use Import JSON to load it.')}}));
+  db.append(h('button',{class:'btn',text:'Import JSON',onclick:function(){
+    var ta=h('textarea',{placeholder:'Paste exported JSON here','aria-label':'JSON'}),file=h('input',{type:'file',accept:'.json,.txt','aria-label':'Choose a JSON file'}),msg=h('p',{class:'note'});
+    file.addEventListener('change',function(){var f=file.files[0];if(!f)return;var rd=new FileReader();rd.onload=function(){ta.value=String(rd.result)};rd.readAsText(f)});
+    var go=h('button',{class:'btn pri',text:'Replace everything'});
+    var close=modal('Import JSON',h('div',{class:'rows'},h('p',{class:'note',text:'This replaces all current data and settings.'}),file,ta,msg),[go,h('button',{class:'btn',text:'Cancel',onclick:function(){close()}})]);
+    go.addEventListener('click',function(){
+      try{var p=JSON.parse(ta.value);if(!p||p.v!==1||!p.cfg||!p.data)throw 0;S=normalise(p);save();close();render()}catch(e){msg.textContent='This is not a valid export from this dashboard.'}
+    });
+  }}));
+  db.append(confirmBtn('Load sample data',function(){S=sample();save();render()},'btn'));
+  db.append(confirmBtn('Clear all rows',function(){S.data=emptyData();S.cfg.sample=false;save();render()}));
+  db.append(confirmBtn('Reset everything',function(){S=normalise({cfg:baseConfig(),data:emptyData()});save();render()}));
+  root.append(card('Data','Export a backup, load the sample, or start again. Clearing rows keeps your settings, lists and frameworks.',db));
+};
+
+/* ---------- shell ---------- */
+function applyTheme(){
+  var a=/^#[0-9a-f]{6}$/i.test(S.cfg.accent)?S.cfg.accent:'#0B4F6C';
+  document.documentElement.style.setProperty('--accent',a);
+  var n=parseInt(a.slice(1),16),r=n>>16,g=(n>>8)&255,b=n&255,lum=(0.299*r+0.587*g+0.114*b)/255;
+  document.documentElement.style.setProperty('--accent-ink',lum>0.6?'#13202B':'#FFFFFF');
+}
+function visiblePages(){return S.cfg.pages.filter(function(p){return p.on||p.id==='setup'})}
+var curPage='';
+function goPage(id){
+  curPage=id;
+  try{if(location.hash!=='#'+id)history.replaceState(null,'','#'+id)}catch(e){try{location.hash=id}catch(e2){}}
+  render();window.scrollTo(0,0);
+}
+function currentId(){
+  var id=curPage||(location.hash||'').slice(1),v=visiblePages();
+  return v.some(function(p){return p.id===id})?id:v[0].id;
+}
+function drawRail(){
+  var cur=currentId();
+  $('#railTitle').textContent=S.cfg.title||'AI Governance Dashboard';
+  $('#nav').replaceChildren.apply($('#nav'),visiblePages().map(function(p){
+    var a=h('a',{href:'#'+p.id,text:p.label});
+    a.addEventListener('click',function(ev){ev.preventDefault();goPage(p.id)});
+    if(p.id===cur)a.setAttribute('aria-current','page');return a;
+  }));
+}
+function drawTop(){
+  var cur=currentId(),p=S.cfg.pages.filter(function(x){return x.id===cur})[0];
+  $('#top').replaceChildren(
+    h('div',null,h('div',{class:'eyebrow',text:S.cfg.org}),h('h1',{text:p?p.label:''})),
+    h('div',{class:'asat',text:'As at '+fmt(S.cfg.asAt)}));
+}
+function drawNotices(){
+  var n=$('#notices'),k=[];
+  if(S.cfg.sample)k.push(h('div',{class:'banner'},h('span',null,h('b',{text:'Sample data. '}),'Every entry is invented for illustration. Clear it to start with your own, or edit it in place.'),
+    confirmBtn('Clear sample data',function(){S.data=emptyData();S.cfg.sample=false;save();render()},'btn pri')));
+  if(!storageOK)k.push(h('div',{class:'banner'},h('span',{text:'This browser is not saving your changes. Use Settings, then Export all, to keep a copy.'})));
+  n.replaceChildren.apply(n,k);
+}
+function render(){
+  applyTheme();drawNotices();drawRail();drawTop();
+  var id=currentId(),root=$('#page');root.replaceChildren();
+  document.title=(S.cfg.title||'AI Governance Dashboard');
+  try{PAGES[id](root)}catch(e){root.append(h('div',{class:'card'},h('h2',{text:'This page could not be drawn'}),h('p',{text:String(e&&e.message||e)})))}
+}
+window.addEventListener('hashchange',function(){curPage=(location.hash||'').slice(1);render();window.scrollTo(0,0)});
+render();
+})();
+</script>
+</body>
+</html>
